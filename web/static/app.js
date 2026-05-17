@@ -4187,27 +4187,64 @@ document.getElementById('edit-group-form').addEventListener('submit', async func
 let downloadProgressInterval = null;
 
 let isoCatalog = null;
+let windowsCatalog = null;
+let currentGetImagesTab = 'linux';
 
 async function showGetImagesModal() {
-    if (!isoCatalog) {
-        try {
-            const res = await authFetch(`${API_BASE}/iso-catalog`);
-            const data = await res.json();
-            if (data.success) {
-                isoCatalog = data.data;
-            } else {
-                showAlert(data.error || 'Failed to load ISO catalog', 'error');
-                return;
-            }
-        } catch (e) {
-            showAlert('Failed to load ISO catalog', 'error');
-            return;
-        }
-    }
     const filter = document.getElementById('get-iso-filter');
     if (filter) filter.value = '';
-    renderGetImagesList('');
+    currentGetImagesTab = 'linux';
+    await switchGetImagesTab('linux');
     openModal('get-images-modal');
+}
+
+async function switchGetImagesTab(tab) {
+    currentGetImagesTab = tab;
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+
+    const desc = document.getElementById('get-images-desc');
+    const filter = document.getElementById('get-iso-filter');
+
+    if (tab === 'windows') {
+        desc.textContent = 'Download Windows ISOs directly from Microsoft servers. Select a version and edition, then hit Download. Links are generated fresh at download time.';
+        filter.placeholder = 'Filter Windows versions…';
+        if (!windowsCatalog) {
+            document.getElementById('get-images-list').innerHTML = '<p style="color: var(--text-secondary); padding: 20px;">Loading Windows builds…</p>';
+            try {
+                const res = await authFetch(`${API_BASE}/windows-builds`);
+                const data = await res.json();
+                if (data.success && data.data && data.data.versions) {
+                    windowsCatalog = data.data.versions;
+                } else {
+                    document.getElementById('get-images-list').innerHTML = '<p style="color: var(--text-secondary); padding: 20px;">Failed to load Windows builds. Work in progress.</p>';
+                    return;
+                }
+            } catch (e) {
+                document.getElementById('get-images-list').innerHTML = '<p style="color: var(--text-secondary); padding: 20px;">Failed to load Windows builds. Work in progress.</p>';
+                return;
+            }
+        }
+        renderWindowsBuilds(filter ? filter.value : '');
+    } else {
+        desc.textContent = 'Download popular Linux distributions directly from official mirrors. Switch the mirror per row, edit the URL freely if you need to point somewhere else, then hit Download. Mirror URLs and release versions can drift — please report issues so the catalog can be kept up to date.';
+        filter.placeholder = 'Filter…';
+        if (!isoCatalog) {
+            try {
+                const res = await authFetch(`${API_BASE}/iso-catalog`);
+                const data = await res.json();
+                if (data.success) {
+                    isoCatalog = data.data;
+                } else {
+                    showAlert(data.error || 'Failed to load ISO catalog', 'error');
+                    return;
+                }
+            } catch (e) {
+                showAlert('Failed to load ISO catalog', 'error');
+                return;
+            }
+        }
+        renderGetImagesList(filter ? filter.value : '');
+    }
 }
 
 function renderGetImagesList(filter) {
@@ -4246,6 +4283,286 @@ function renderGetImagesList(filter) {
     }
     if (!html) html = '<p style="color: var(--text-secondary); padding: 20px;">No matches.</p>';
     container.innerHTML = html;
+}
+
+let windowsLanguagesCache = {}; // key: "version_id:edition_id" -> {languages, timestamp}
+
+function renderWindowsBuilds(filter) {
+    const container = document.getElementById('get-images-list');
+    if (!container) return;
+
+    const ver = windowsVersionDropdownContent(filter);
+    container.innerHTML = ver.html;
+    if (ver.populate) ver.populate();
+}
+
+function windowsVersionDropdownContent(filter) {
+    const q = (filter || '').trim().toLowerCase();
+
+    // Filter catalog
+    let filtered = windowsCatalog || [];
+    if (q) {
+        filtered = filtered.filter(v =>
+            v.display.toLowerCase().includes(q) || v.id.toLowerCase().includes(q)
+        );
+    }
+
+    const html = `
+        <div class="win-info-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span>ISOs are downloaded directly from <strong>Microsoft's CDN</strong> — clean, untouched retail images. No modifications.</span>
+        </div>
+        <div class="win-selector-panel">
+            <div class="selector-row">
+                <div class="selector-group">
+                    <label>Version</label>
+                    <select id="win-version" onchange="onWinVersionChange()">
+                        <option value="">— Select Version —</option>
+                        ${filtered.map(v => `<option value="${jsAttrEscape(v.id)}">${escapeHtml(v.display)}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="selector-group">
+                    <label>Release</label>
+                    <select id="win-release" onchange="onWinReleaseChange()" disabled>
+                        <option value="">— Select Version First —</option>
+                    </select>
+                </div>
+            </div>
+            <div class="selector-row">
+                <div class="selector-group">
+                    <label>Edition</label>
+                    <select id="win-edition" onchange="onWinEditionChange()" disabled>
+                        <option value="">— Select Release First —</option>
+                    </select>
+                </div>
+                <div class="selector-group">
+                    <label>Language</label>
+                    <select id="win-language" disabled>
+                        <option value="">— Select Edition First —</option>
+                    </select>
+                </div>
+            </div>
+            <div class="selector-row">
+                <div class="selector-group">
+                    <label>Architecture</label>
+                    <div class="arch-toggle" id="win-arch-toggle">
+                        <button class="arch-btn active" data-arch="x64" onclick="setWinArch(this)">x64</button>
+                        <button class="arch-btn" data-arch="x86" onclick="setWinArch(this)">x86</button>
+                        <button class="arch-btn" data-arch="ARM64" onclick="setWinArch(this)">ARM64</button>
+                    </div>
+                </div>
+                <div class="selector-group" style="justify-content:flex-end;">
+                    <button class="btn btn-primary" id="win-download-btn" disabled onclick="downloadWindowsISO()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Download
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="windows-dl-progress" style="margin-top:12px;"></div>
+    `;
+
+    if (!filtered.length) {
+        return {html: '<p style="color: var(--text-secondary); padding: 20px;">No matching Windows versions found.</p>'};
+    }
+
+    return {html};
+}
+
+let selectedWinArch = 'x64';
+
+function setWinArch(btn) {
+    document.querySelectorAll('#win-arch-toggle .arch-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedWinArch = btn.dataset.arch;
+}
+
+function onWinVersionChange() {
+    const verSelect = document.getElementById('win-version');
+    const releaseSelect = document.getElementById('win-release');
+    const editionSelect = document.getElementById('win-edition');
+    const langSelect = document.getElementById('win-language');
+    const dlBtn = document.getElementById('win-download-btn');
+
+    const verID = verSelect.value;
+    if (!verID) {
+        releaseSelect.innerHTML = '<option value="">— Select Version First —</option>';
+        releaseSelect.disabled = true;
+        editionSelect.innerHTML = '<option value="">— Select Release First —</option>';
+        editionSelect.disabled = true;
+        langSelect.innerHTML = '<option value="">— Select Edition First —</option>';
+        langSelect.disabled = true;
+        dlBtn.disabled = true;
+        return;
+    }
+
+    const ver = (windowsCatalog || []).find(v => v.id === verID);
+    if (!ver) return;
+
+    let opts = '';
+    for (const rel of (ver.releases || [])) {
+        const buildTag = rel.build_number ? ` <span style="color:var(--text-muted);font-size:11px;">(${escapeHtml(rel.build_number)})</span>` : '';
+        opts += `<option value="${jsAttrEscape(rel.label)}">${escapeHtml(rel.label)}${buildTag}</option>`;
+    }
+    releaseSelect.innerHTML = '<option value="">— Select Release —</option>' + opts;
+    releaseSelect.disabled = false;
+    editionSelect.innerHTML = '<option value="">— Select Release First —</option>';
+    editionSelect.disabled = true;
+    langSelect.innerHTML = '<option value="">— Select Edition First —</option>';
+    langSelect.disabled = true;
+    dlBtn.disabled = true;
+}
+
+function onWinReleaseChange() {
+    const verSelect = document.getElementById('win-version');
+    const releaseSelect = document.getElementById('win-release');
+    const editionSelect = document.getElementById('win-edition');
+    const langSelect = document.getElementById('win-language');
+    const dlBtn = document.getElementById('win-download-btn');
+
+    const verID = verSelect.value;
+    const relLabel = releaseSelect.value;
+    if (!verID || !relLabel) {
+        editionSelect.innerHTML = '<option value="">— Select Release First —</option>';
+        editionSelect.disabled = true;
+        langSelect.innerHTML = '<option value="">— Select Edition First —</option>';
+        langSelect.disabled = true;
+        dlBtn.disabled = true;
+        return;
+    }
+
+    const ver = (windowsCatalog || []).find(v => v.id === verID);
+    if (!ver) return;
+
+    // Populate editions
+    let opts = '';
+    for (const ed of (ver.editions || [])) {
+        opts += `<option value="${ed.ids[0] || ''}">${escapeHtml(ed.label)}</option>`;
+    }
+    if (!opts) {
+        editionSelect.innerHTML = '<option value="">— Not available for this version —</option>';
+        editionSelect.disabled = true;
+        langSelect.innerHTML = '<option value="">— N/A —</option>';
+        langSelect.disabled = true;
+        dlBtn.disabled = true;
+        return;
+    }
+    editionSelect.innerHTML = '<option value="">— Select Edition —</option>' + opts;
+    editionSelect.disabled = false;
+
+    // Reset language
+    langSelect.innerHTML = '<option value="">— Select Edition First —</option>';
+    langSelect.disabled = true;
+    dlBtn.disabled = true;
+}
+
+function onWinEditionChange() {
+    const editionSelect = document.getElementById('win-edition');
+    const langSelect = document.getElementById('win-language');
+    const dlBtn = document.getElementById('win-download-btn');
+    const verSelect = document.getElementById('win-version');
+
+    const edVal = editionSelect.value;
+    if (!edVal) {
+        langSelect.innerHTML = '<option value="">— Select Edition —</option>';
+        langSelect.disabled = true;
+        dlBtn.disabled = true;
+        return;
+    }
+
+    const versionID = verSelect.value;
+    const cacheKey = `${versionID}:${edVal}`;
+
+    langSelect.innerHTML = '<option value="">Loading languages…</option>';
+    langSelect.disabled = true;
+    dlBtn.disabled = true;
+
+    // Check cache (5-minute TTL)
+    const cached = windowsLanguagesCache[cacheKey];
+    if (cached && Date.now() - cached.timestamp < 300000) {
+        populateLanguageSelect(cached.languages);
+        return;
+    }
+
+    authFetch(`${API_BASE}/windows-languages?version_id=${encodeURIComponent(versionID)}&edition_id=${encodeURIComponent(edVal)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.data && data.data.languages) {
+                windowsLanguagesCache[cacheKey] = { languages: data.data.languages, timestamp: Date.now() };
+                populateLanguageSelect(data.data.languages);
+            } else {
+                langSelect.innerHTML = '<option value="">Failed to load languages</option>';
+                langSelect.disabled = false;
+            }
+        })
+        .catch(() => {
+            langSelect.innerHTML = '<option value="">Network error</option>';
+            langSelect.disabled = false;
+        });
+}
+
+function populateLanguageSelect(languages) {
+    const langSelect = document.getElementById('win-language');
+    const dlBtn = document.getElementById('win-download-btn');
+    let opts = '';
+    // Sort by display name, English first
+    const sorted = [...languages].sort((a, b) => a.name === 'English' ? -1 : b.name === 'English' ? 1 : (a.display_name || a.name).localeCompare(b.display_name || b.name));
+    for (const l of sorted) {
+        opts += `<option value="${jsAttrEscape(l.name)}" data-sku-id="${jsAttrEscape(l.sku_id || '')}">${escapeHtml(l.display_name || l.name)}</option>`;
+    }
+    langSelect.innerHTML = opts;
+    langSelect.disabled = false;
+    dlBtn.disabled = false;
+}
+
+function getSelectedWinConfig() {
+    const ver = document.getElementById('win-version').value;
+    const rel = document.getElementById('win-release').value;
+    const edition = document.getElementById('win-edition').value;
+    const langSelect = document.getElementById('win-language');
+    const lang = langSelect.value;
+    const skuID = langSelect.selectedOptions && langSelect.selectedOptions[0] ? langSelect.selectedOptions[0].dataset.skuId : '';
+    return {version_id: ver, release: rel, edition, lang, arch: selectedWinArch, sku_id: skuID};
+}
+
+async function downloadWindowsISO() {
+    const cfg = getSelectedWinConfig();
+    if (!cfg.version_id || !cfg.release || !cfg.edition || !cfg.lang) return;
+
+    const rowKey = `win-${cfg.version_id}-${cfg.release.replace(/[^a-zA-Z0-9]/g, '')}`;
+    const progressDiv = document.getElementById('windows-dl-progress');
+
+    progressDiv.innerHTML = renderGetISOProgressHTML(rowKey, 'Requesting download link…');
+
+    try {
+        const res = await authFetch(`${API_BASE}/images/download-windows`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cfg),
+        });
+        const data = await res.json();
+        if (data.success && data.data && data.data.filename) {
+            startGetISOProgressPolling(rowKey, data.data.filename, cfg.version_id, cfg.release);
+        } else {
+            progressDiv.innerHTML = renderGetISOErrorHTML(rowKey, data.error || 'Failed to start download', cfg.version_id, cfg.release);
+        }
+    } catch (e) {
+        progressDiv.innerHTML = renderGetISOErrorHTML(rowKey, e.message || 'Network error', cfg.version_id, cfg.release);
+    }
+}
+
+function renderGetISOProgressHTML(rowKey, statusText) {
+    return `<div class="get-iso-progress" id="get-iso-actions-${jsAttrEscape(rowKey)}">
+        <div class="get-iso-bar"><div class="get-iso-bar-fill" id="get-iso-bar-fill-${jsAttrEscape(rowKey)}" style="width: 0%;"></div></div>
+        <span class="get-iso-status-text" id="get-iso-status-${jsAttrEscape(rowKey)}">${escapeHtml(statusText)}</span>
+    </div>`;
+}
+
+function renderGetISOErrorHTML(rowKey, error, versionID, releaseLabel) {
+    return `<div class="get-iso-progress" id="get-iso-actions-${jsAttrEscape(rowKey)}">
+        <span class="get-iso-status-text" style="color: var(--danger);">${escapeHtml(error)}</span>
+        <button class="btn btn-sm" onclick="downloadWindowsISO()">Retry</button>
+    </div>`;
 }
 
 function updateGetISORowURL(select) {
@@ -4335,6 +4652,10 @@ function startGetISOProgressPolling(rowKey, filename, distroName, releaseLabel) 
 function renderGetISOError(rowKey, errorMsg, distroName, releaseLabel) {
     const el = document.getElementById('get-iso-actions-' + rowKey);
     if (!el) return;
+    if (rowKey.startsWith('win-')) {
+        el.innerHTML = renderGetISOErrorHTML(rowKey, errorMsg, distroName, releaseLabel);
+        return;
+    }
     const short = errorMsg.length > 50 ? errorMsg.slice(0, 50) + '…' : errorMsg;
     el.innerHTML = `
         <div class="get-iso-progress">
@@ -4346,11 +4667,26 @@ function renderGetISOError(rowKey, errorMsg, distroName, releaseLabel) {
 function renderGetISOComplete(rowKey, distroName, releaseLabel) {
     const el = document.getElementById('get-iso-actions-' + rowKey);
     if (!el) return;
+    if (rowKey.startsWith('win-')) {
+        el.innerHTML = `<div class="get-iso-progress">
+            <span class="get-iso-status-text" style="color: var(--success);">✓ Downloaded</span>
+            <button class="btn btn-sm" onclick="downloadWindowsISO()">Download Again</button>
+        </div>`;
+        return;
+    }
     el.innerHTML = `
         <div class="get-iso-progress">
             <span class="get-iso-status-text" style="color: var(--success);">✓ Downloaded</span>
             <button type="button" class="btn btn-sm" onclick="downloadFromGetISO('${jsAttrEscape(rowKey)}', '${jsAttrEscape(distroName)}', '${jsAttrEscape(releaseLabel)}')">Again</button>
         </div>`;
+}
+
+function onGetImagesFilter(value) {
+    if (currentGetImagesTab === 'windows') {
+        renderWindowsBuilds(value);
+    } else {
+        renderGetImagesList(value);
+    }
 }
 
 function clearGetISOPolling() {
