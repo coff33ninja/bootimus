@@ -20,9 +20,17 @@ jobs:
           go-version: '1.24'
 
       - name: Setup Zig
-        uses: goto-bus-stop/setup-zig@v2
-        with:
-          version: latest
+        shell: pwsh
+        run: |
+          $zigVersion = "0.14.0"
+          $zigZip = "zig-windows-x86_64-$zigVersion.zip"
+          $zigUrl = "https://ziglang.org/download/$zigVersion/$zigZip"
+          Write-Host "Downloading Zig $zigVersion..."
+          Invoke-WebRequest -Uri $zigUrl -OutFile "$env:RUNNER_TEMP\$zigZip"
+          Expand-Archive -Path "$env:RUNNER_TEMP\$zigZip" -DestinationPath "$env:RUNNER_TEMP\zig"
+          $zigDir = (Get-ChildItem "$env:RUNNER_TEMP\zig\zig-windows-x86_64-*").FullName
+          Write-Host "ZIG_DIR=$zigDir" >> $env:GITHUB_ENV
+          echo "$zigDir" >> $env:GITHUB_PATH
 
       - name: Cache Go modules
         uses: actions/cache@v4
