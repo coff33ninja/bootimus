@@ -19,18 +19,8 @@ jobs:
         with:
           go-version: '1.24'
 
-      - name: Setup Zig
-        shell: pwsh
-        run: |
-          $zigVersion = "0.14.0"
-          $zigZip = "zig-windows-x86_64-$zigVersion.zip"
-          $zigUrl = "https://ziglang.org/download/$zigVersion/$zigZip"
-          Write-Host "Downloading Zig $zigVersion..."
-          Invoke-WebRequest -Uri $zigUrl -OutFile "$env:RUNNER_TEMP\$zigZip"
-          Expand-Archive -Path "$env:RUNNER_TEMP\$zigZip" -DestinationPath "$env:RUNNER_TEMP\zig"
-          $zigDir = (Get-ChildItem "$env:RUNNER_TEMP\zig\zig-windows-x86_64-*").FullName
-          Write-Host "ZIG_DIR=$zigDir" >> $env:GITHUB_ENV
-          echo "$zigDir" >> $env:GITHUB_PATH
+      - name: Setup MSVC (for CGO)
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -41,17 +31,13 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Build
-        run: go build -ldflags="-X bootimus/cmd.version=$(Get-Content VERSION)" -o dist/bootimus-windows-amd64.exe ./cmd/bootimus
-        env:
-          CC: zig cc
+        run: go build -ldflags="-X bootimus/cmd.version=$(Get-Content VERSION)" -o dist/bootimus-windows-amd64.exe .
 
       - name: Vet
         run: go vet ./...
 
       - name: Test
         run: go test ./... -v -count=1
-        env:
-          CC: zig cc
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
