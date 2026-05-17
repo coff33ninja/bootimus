@@ -17,7 +17,10 @@ import (
 //go:embed distro-profiles.json
 var embeddedProfiles embed.FS
 
-const RemoteProfilesURL = "https://raw.githubusercontent.com/garybowers/bootimus/main/distro-profiles.json"
+// RemoteProfilesURL points to the canonical distro profile maintained by the
+// original upstream author (garybowers). This fork uses its own copy for
+// experimental updates — replace with the upstream URL for the stable list.
+const RemoteProfilesURL = "https://raw.githubusercontent.com/coff33ninja/bootimus/main/distro-profiles.json"
 
 type ProfileFile struct {
 	Version  string        `json:"version"`

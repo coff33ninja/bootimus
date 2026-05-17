@@ -21,7 +21,10 @@ import (
 //go:embed tools-profiles.json
 var embeddedTools embed.FS
 
-const RemoteToolsURL = "https://raw.githubusercontent.com/garybowers/bootimus/main/tools-profiles.json"
+// RemoteToolsURL points to the canonical tools profile maintained by the
+// original upstream author (garybowers). This fork uses its own copy for
+// experimental updates — replace with the upstream URL for the stable list.
+const RemoteToolsURL = "https://raw.githubusercontent.com/coff33ninja/bootimus/main/tools-profiles.json"
 
 type ToolDefinition struct {
 	Name            string `json:"name"`
