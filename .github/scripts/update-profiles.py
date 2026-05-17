@@ -62,6 +62,8 @@ def natural_key(v):
 
 
 def save_json(path, data):
+    if DRY_RUN:
+        return
     tmp = path.with_suffix(".json.tmp")
     with open(tmp, "w", encoding="utf-8", newline="\n") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
@@ -240,23 +242,45 @@ def tool_netbootxyz(tool):
 
 
 def tool_systemrescue(tool):
-    """SystemRescue: GitHub system-rescue/system-rescue or check CDN"""
-    # Try GitHub first
-    tag, assets = github_latest("system-rescue/system-rescue")
-    if not tag:
-        # Fallback: try Tomas-M/system-rescue (older)
-        tag, assets = github_latest("Tomas-M/system-rescue")
-    if not tag:
-        return False
+    """SystemRescue: probe CDN with HEAD requests for latest version"""
     current = tool.get("version", "")
-    # SystemRescue uses short version like "11.00" not "v11.00"
-    clean_tag = tag.lstrip("v")
-    if clean_tag > current:
-        print(f"  systemrescue: {current} -> {clean_tag}")
-        tool["version"] = clean_tag
+    # Parse current version and try incremental bumps
+    parts = current.split(".")
+    major, minor = int(parts[0]), int(parts[1])
+    latest = current
+    for bump in [1, 2, 3, 4, 5]:
+        candidate = f"{major}.{minor + bump:02d}"
+        url = (
+            f"https://fastly-cdn.system-rescue.org/releases/"
+            f"{candidate}/systemrescue-{candidate}-amd64.iso"
+        )
+        req = urllib.request.Request(url, method="HEAD")
+        try:
+            urllib.request.urlopen(req, timeout=10)
+            latest = candidate
+        except urllib.error.HTTPError:
+            break
+        except Exception:
+            break
+    # Also check next major
+    for bump in [1, 2]:
+        candidate = f"{major + bump}.00"
+        url = (
+            f"https://fastly-cdn.system-rescue.org/releases/"
+            f"{candidate}/systemrescue-{candidate}-amd64.iso"
+        )
+        req = urllib.request.Request(url, method="HEAD")
+        try:
+            urllib.request.urlopen(req, timeout=10)
+            latest = candidate
+        except Exception:
+            break
+    if latest > current:
+        print(f"  systemrescue: {current} -> {latest}")
+        tool["version"] = latest
         tool["download_url"] = (
             f"https://fastly-cdn.system-rescue.org/releases/"
-            f"{clean_tag}/systemrescue-{clean_tag}-amd64.iso"
+            f"{latest}/systemrescue-{latest}-amd64.iso"
         )
         return True
     return False
@@ -337,16 +361,8 @@ def _debian_checker(data):
         if not m:
             continue
         current_ver = m.group(1)
-        # Fetch the current/ directory listing
         base = prof["mirrors"][0]["base"] if prof.get("mirrors") else "https://cdimage.debian.org/debian-cd/current/amd64"
-        dir_url = base.rsplit("/", 1)[0]  # https://cdimage.debian.org/debian-cd/current/
-        html = fetch(dir_url + "/")
-        if not html:
-            continue
-        # Find the actual version from symlink or directory
-        # Follow redirect of "current" or parse directory listing
-        # Check for SHA256SUMS which contains the ISO name
-        sha = fetch(dir_url.rstrip("/amd64") + "/SHA256SUMS")
+        sha = fetch(base + "/iso-dvd/SHA256SUMS")
         if sha:
             for line in sha.splitlines():
                 m2 = re.search(r"debian-([\d.]+)-amd64", line)
@@ -373,7 +389,7 @@ def _fedora_checker(data):
         if not m:
             continue
         current_ver = m.group(1)
-        html = fetch("https://download.fedoraproject.org/pub/fedora/linux/releases/")
+        html = fetch("https://dl.fedoraproject.org/pub/fedora/linux/releases/")
         if not html:
             continue
         vers = set()
@@ -410,17 +426,25 @@ def _alpine_checker(data):
         if not html:
             continue
         vers = set()
-        for m2 in re.finditer(r'href="(v[\d.]+)/?"', html):
+        for m2 in re.finditer(r'href="(v[\d.]+)/"', html):
             v = m2.group(1).lstrip("v")
             if v.startswith(base_major.split(".")[0] + "."):
                 vers.add(v)
         if not vers:
-            continue
-        latest_branch = sorted(vers, key=natural_key)[-1]
+            # Fallback: use the latest-stable symlink
+            latest_branch = base_major
+        else:
+            latest_branch = sorted(vers, key=natural_key)[-1]
         # Now check the actual patch version within this branch
         html2 = fetch(f"https://dl-cdn.alpinelinux.org/alpine/v{latest_branch}/releases/x86_64/")
         if not html2:
-            continue
+            # Branch exists but no releases yet — try previous branch
+            prev = ".".join(str(int(x) - 1) if i == 1 else x for i, x in enumerate(latest_branch.split(".")))
+            html2 = fetch(f"https://dl-cdn.alpinelinux.org/alpine/v{prev}/releases/x86_64/")
+            if html2:
+                latest_branch = prev
+            else:
+                continue
         patch_vers = set()
         for m3 in re.finditer(rf"alpine-standard-({re.escape(latest_branch)}\.\d+)-", html2):
             patch_vers.add(m3.group(1))

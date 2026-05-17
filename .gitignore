@@ -46,6 +46,10 @@ bootloaders/thinos-initrd
 # Cross-compile staging / test output.
 /tmp-build/
 
+# Python cache
+__pycache__/
+*.pyc
+
 # Secure Boot signing material — NEVER commit. Private key lives in Vaultwarden.
 signing/
 *.key
