@@ -50,3 +50,7 @@ bootloaders/thinos-initrd
 signing/
 *.key
 *.crt
+
+
+#Ignore vscode AI rules
+.github\instructions\codacy.instructions.md

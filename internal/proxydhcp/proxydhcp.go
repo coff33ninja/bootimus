@@ -6,7 +6,6 @@ import (
 	"net"
 	"strconv"
 	"sync"
-	"syscall"
 
 	"bootimus/internal/metrics"
 
@@ -52,7 +51,7 @@ func NewServer(cfg Config) (*Server, error) {
 func (s *Server) Start() error {
 	conn, err := net.ListenUDP("udp4", &net.UDPAddr{IP: net.IPv4zero, Port: 67})
 	if err != nil {
-		return fmt.Errorf("listen UDP/67: %w (needs root or CAP_NET_BIND_SERVICE)", err)
+		return fmt.Errorf("listen UDP/67: %w (needs admin or --proxy-dhcp disabled)", err)
 	}
 	if err := enableBroadcast(conn); err != nil {
 		conn.Close()
@@ -171,20 +170,6 @@ func pxeVendorOptions() []byte {
 		0x06, 0x01, 0x08,
 		0xff,
 	}
-}
-
-func enableBroadcast(conn *net.UDPConn) error {
-	raw, err := conn.SyscallConn()
-	if err != nil {
-		return err
-	}
-	var setErr error
-	if err := raw.Control(func(fd uintptr) {
-		setErr = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_BROADCAST, 1)
-	}); err != nil {
-		return err
-	}
-	return setErr
 }
 
 func (s *Server) bootfileFor(req *dhcpv4.DHCPv4) string {

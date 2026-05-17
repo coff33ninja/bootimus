@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -985,7 +986,11 @@ func (h *Handler) UploadImage(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				os.Remove(filePath)
 				log.Printf("Failed to save file %s: %v", filename, err)
-				h.sendJSON(w, http.StatusInternalServerError, Response{Success: false, Error: "Failed to save file"})
+				msg := "Failed to save file"
+				if strings.Contains(err.Error(), "disk is full") || strings.Contains(err.Error(), "not enough space") || strings.Contains(err.Error(), "no space left") {
+					msg = "Disk space exhausted — cannot save uploaded file. Free up disk space and retry."
+				}
+				h.sendJSON(w, http.StatusInternalServerError, Response{Success: false, Error: msg})
 				return
 			}
 			fileSaved = true
@@ -1223,7 +1228,11 @@ func (h *Handler) ExtractImage(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Setting boot_method to 'kernel' for image ID=%d, filename=%s", image.ID, image.Filename)
 
 	if err := h.storage.UpdateImage(filename, image); err != nil {
-		h.sendJSON(w, http.StatusInternalServerError, Response{Success: false, Error: err.Error()})
+		msg := err.Error()
+		if strings.Contains(msg, "disk is full") || strings.Contains(msg, "not enough space") || strings.Contains(msg, "no space left") {
+			msg = "Disk space exhausted — cannot save extraction results. Free up disk space and retry."
+		}
+		h.sendJSON(w, http.StatusInternalServerError, Response{Success: false, Error: msg})
 		return
 	}
 
@@ -1284,7 +1293,11 @@ func (h *Handler) PatchImageSMB(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !wim.IsAvailable() {
-		h.sendJSON(w, http.StatusPreconditionFailed, Response{Success: false, Error: "wimlib-imagex not installed on the server. Install wimtools (e.g. apt install wimtools) to enable boot.wim patching."})
+		msg := "wimlib-imagex not installed. Install it and ensure it is in PATH"
+		if runtime.GOOS == "windows" {
+			msg = "wimlib-imagex not installed. It will be auto-downloaded on server restart if internet is available, or download from https://wimlib.net/"
+		}
+		h.sendJSON(w, http.StatusPreconditionFailed, Response{Success: false, Error: msg})
 		return
 	}
 
@@ -2390,15 +2403,18 @@ func (h *Handler) GetServerInfo(w http.ResponseWriter, r *http.Request) {
 					return "Disabled"
 				}
 				if h.smbManager == nil {
-					return "Requested but unavailable (install samba and ensure smbd is in PATH)"
+					if runtime.GOOS == "windows" {
+						return "Unavailable (requires admin privileges to create SMB shares)"
+					}
+					return "Unavailable (install samba and ensure smbd is in PATH)"
 				}
-				return fmt.Sprintf("Enabled (%d share(s) active, port %d)", h.smbManager.ShareCount(), h.smbManager.Port())
+				return fmt.Sprintf("Enabled (%d share(s), port %d)", h.smbManager.ShareCount(), h.smbManager.Port())
 			}(),
 			"windows_smb_patcher": func() string {
 				if wim.IsAvailable() {
 					return "Available"
 				}
-				return "Unavailable (install wimtools / wimlib-imagex to enable boot.wim patching)"
+				return "Unavailable (auto-downloads on server startup if internet is available)"
 			}(),
 			"http_port": fmt.Sprintf("%d", h.httpPort),
 		},

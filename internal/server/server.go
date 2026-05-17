@@ -1,6 +1,7 @@
 package server
 
 import (
+	"archive/zip"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -14,6 +15,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"runtime/debug"
 	"sort"
@@ -35,6 +37,7 @@ import (
 	"bootimus/internal/scheduler"
 	"bootimus/internal/smb"
 	"bootimus/internal/storage"
+	"bootimus/internal/toolpath"
 	"bootimus/internal/tools"
 	"bootimus/internal/webhook"
 	"bootimus/internal/wol"
@@ -460,6 +463,20 @@ func (s *Server) Start() error {
 		}
 	}
 
+	if s.config.ProxyDHCPEnabled {
+		log.Printf("Proxy DHCP: enabled (will bind UDP/67)")
+	} else {
+		log.Printf("Proxy DHCP: disabled (use --proxy-dhcp to enable)")
+	}
+
+	if s.config.WindowsSMBEnabled {
+		log.Printf("Windows SMB: enabled (port %d, requires smbd in PATH)", s.config.WindowsSMBPort)
+	} else {
+		log.Printf("Windows SMB: disabled (use --windows-smb to enable)")
+	}
+
+	s.ensureWimlib()
+
 	if s.config.WindowsSMBEnabled {
 		mgr := smb.NewManager(s.config.DataDir, s.config.WindowsSMBPort)
 		s.preloadSMBShares(mgr)
@@ -562,6 +579,117 @@ func (s *Server) preloadSMBShares(mgr *smb.Manager) {
 	if added > 0 {
 		log.Printf("Windows SMB: preloaded %d share(s) for smbd startup", added)
 	}
+}
+
+func (s *Server) ensureWimlib() {
+	if _, err := toolpath.LookPath("wimlib-imagex"); err == nil {
+		log.Printf("wimlib-imagex: found")
+		return
+	}
+	if runtime.GOOS != "windows" {
+		return
+	}
+
+	toolsDir := filepath.Join(s.config.DataDir, "tools")
+	exePath := filepath.Join(toolsDir, "wimlib-imagex.exe")
+
+	if _, err := os.Stat(exePath); err == nil {
+		toolpath.AddToolsDir(toolsDir)
+		log.Printf("wimlib-imagex: found in data tools directory")
+		return
+	}
+
+	log.Printf("wimlib-imagex: not found — checking latest version...")
+
+	url, err := latestWimlibURL()
+	if err != nil {
+		log.Printf("wimlib-imagex: %v", err)
+		return
+	}
+
+	os.MkdirAll(toolsDir, 0755)
+
+	log.Printf("wimlib-imagex: downloading %s ...", url)
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Printf("wimlib-imagex: download failed: %v", err)
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("wimlib-imagex: download returned status %d", resp.StatusCode)
+		resp.Body.Close()
+		return
+	}
+
+	zipData, err := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		log.Printf("wimlib-imagex: failed to read download: %v", err)
+		return
+	}
+
+	zr, err := zip.NewReader(bytes.NewReader(zipData), int64(len(zipData)))
+	if err != nil {
+		log.Printf("wimlib-imagex: failed to open zip: %v", err)
+		return
+	}
+
+	extracted := false
+	for _, f := range zr.File {
+		if strings.HasSuffix(f.Name, "wimlib-imagex.exe") {
+			rc, err := f.Open()
+			if err != nil {
+				log.Printf("wimlib-imagex: failed to open entry in zip: %v", err)
+				break
+			}
+			out, err := os.OpenFile(exePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
+			if err != nil {
+				rc.Close()
+				log.Printf("wimlib-imagex: failed to create %s: %v", exePath, err)
+				break
+			}
+			_, err = io.Copy(out, rc)
+			rc.Close()
+			out.Close()
+			if err != nil {
+				log.Printf("wimlib-imagex: failed to extract: %v", err)
+				os.Remove(exePath)
+				break
+			}
+			extracted = true
+			break
+		}
+	}
+
+	if extracted {
+		toolpath.AddToolsDir(toolsDir)
+		log.Printf("wimlib-imagex: installed to %s", exePath)
+	} else {
+		log.Printf("wimlib-imagex: could not find wimlib-imagex.exe in downloaded zip")
+	}
+}
+
+var wimlibRe = regexp.MustCompile(`wimlib-\d+\.\d+\.\d+-windows-x86_64-bin\.zip`)
+
+func latestWimlibURL() (string, error) {
+	resp, err := http.Get("https://wimlib.net/downloads/index.html")
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch downloads page: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read downloads page: %w", err)
+	}
+
+	match := wimlibRe.Find(body)
+	if match == nil {
+		return "", fmt.Errorf("no windows x86_64 binary found on downloads page")
+	}
+
+	return "https://wimlib.net/downloads/" + string(match), nil
 }
 
 func (s *Server) Wait() {
@@ -822,7 +950,7 @@ goto dhcp
 
 	addr := fmt.Sprintf(":%d", s.config.TFTPPort)
 	if err := server.ListenAndServe(addr); err != nil {
-		return fmt.Errorf("TFTP server failed: %w", err)
+		return fmt.Errorf("TFTP server failed on port %d: %w (use --tftp-port to change)", s.config.TFTPPort, err)
 	}
 
 	return nil
@@ -1015,7 +1143,7 @@ func (s *Server) startHTTPServer() error {
 	}
 
 	if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		return fmt.Errorf("HTTP server failed: %w", err)
+		return fmt.Errorf("HTTP server failed on port %d: %w (use --http-port to change)", s.config.HTTPPort, err)
 	}
 
 	return nil
@@ -1038,7 +1166,7 @@ func (s *Server) startAdminServer() error {
 	}
 
 	if err := s.adminServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		return fmt.Errorf("Admin server failed: %w", err)
+		return fmt.Errorf("Admin server failed on port %d: %w (use --admin-port to change)", s.config.AdminPort, err)
 	}
 
 	return nil
@@ -1670,7 +1798,7 @@ func (s *Server) handleInventoryReport(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	script := fmt.Sprintf("#!ipxe\nchain http://%s:%d/menu.ipxe?mac=%s\n", s.config.ServerAddr, s.config.HTTPPort, mac)
+	script := fmt.Sprintf("#!ipxe\nchain http://%s:%d/menu.ipxe?mac=%s&platform=%s&arch=%s\n", s.config.ServerAddr, s.config.HTTPPort, mac, r.FormValue("platform"), r.FormValue("buildarch"))
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(script))
 }
@@ -1682,6 +1810,8 @@ func (s *Server) handleIPXEMenu(w http.ResponseWriter, r *http.Request) {
 	}
 
 	macAddress = strings.ToLower(strings.ReplaceAll(macAddress, "-", ":"))
+	platform := r.URL.Query().Get("platform")
+	buildArch := r.URL.Query().Get("arch")
 
 	s.logAndBroadcast("Client Connected: MAC %s (IP: %s) requesting boot menu", macAddress, r.RemoteAddr)
 
@@ -1715,7 +1845,7 @@ func (s *Server) handleIPXEMenu(w http.ResponseWriter, r *http.Request) {
 		images = convertISOsToImages(isos)
 	}
 
-	menu := s.generateIPXEMenuWithGroups(images, macAddress, nextBootImageID)
+	menu := s.generateIPXEMenuWithGroups(images, macAddress, platform, buildArch, nextBootImageID)
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(menu))
 }

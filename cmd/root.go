@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -114,7 +116,13 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 	} else {
 		viper.AddConfigPath(".")
-		viper.AddConfigPath("/etc/bootimus/")
+		if runtime.GOOS == "windows" {
+			if pd := os.Getenv("ProgramData"); pd != "" {
+				viper.AddConfigPath(filepath.Join(pd, "bootimus"))
+			}
+		} else {
+			viper.AddConfigPath("/etc/bootimus/")
+		}
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("bootimus")
 	}

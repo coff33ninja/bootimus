@@ -23,9 +23,11 @@ type MenuBuilder struct {
 	enabledTools     []tools.EnabledTool
 	nextBootImageID  uint
 	profileManager   *profiles.Manager
+	platform         string
+	buildArch        string
 }
 
-func (s *Server) generateIPXEMenuWithGroups(images []models.Image, macAddress string, nextBootImageID ...uint) string {
+func (s *Server) generateIPXEMenuWithGroups(images []models.Image, macAddress, platform, buildArch string, nextBootImageID ...uint) string {
 	groups, err := s.config.Storage.ListImageGroups()
 	if err != nil {
 		return s.generateIPXEMenu(images, macAddress)
@@ -54,6 +56,8 @@ func (s *Server) generateIPXEMenuWithGroups(images []models.Image, macAddress st
 		enabledTools:    enabledTools,
 		nextBootImageID: nbID,
 		profileManager:  s.config.ProfileManager,
+		platform:        platform,
+		buildArch:       buildArch,
 	}
 
 	return mb.Build()
@@ -115,6 +119,37 @@ func encodePathSegments(path string) string {
 	return strings.Join(segments, "/")
 }
 
+func (mb *MenuBuilder) platformBadge() string {
+	if mb.platform == "efi" {
+		return "UEFI"
+	}
+	return "BIOS"
+}
+
+func (mb *MenuBuilder) platformIcon() string {
+	if mb.platform == "efi" {
+		return "[UEFI]"
+	}
+	return "[BIOS]"
+}
+
+func (mb *MenuBuilder) headerInfo() string {
+	badge := mb.platformBadge()
+	label := fmt.Sprintf("Server: %s:%d | Client: %s | Mode: %s", mb.serverAddr, mb.httpPort, mb.macAddress, badge)
+	if mb.buildArch != "" {
+		label += fmt.Sprintf(" | Arch: %s", mb.buildArch)
+	}
+	sep := strings.Repeat("=", len(label)+4)
+	return fmt.Sprintf("item --gap %s\nitem --gap  %s\nitem --gap %s\n", sep, label, sep)
+}
+
+func (mb *MenuBuilder) formatToolItem(t *tools.EnabledTool) string {
+	if t.KernelURLBIOS != "" {
+		return fmt.Sprintf("item tool-%s [BIOS+UEFI] %s\n", t.Name, t.DisplayName)
+	}
+	return fmt.Sprintf("item tool-%s [%s] %s\n", t.Name, mb.platformIcon(), t.DisplayName)
+}
+
 func (mb *MenuBuilder) buildMainMenu() string {
 	var sb strings.Builder
 
@@ -131,20 +166,22 @@ func (mb *MenuBuilder) buildMainMenu() string {
 		}
 	}
 
+	sb.WriteString(mb.headerInfo())
+
 	if len(mb.enabledTools) > 0 {
-		sb.WriteString("item --gap -- Tools:\n")
+		sb.WriteString("item --gap == Tools ==\n")
 		sb.WriteString("item tools Tools >>\n")
 	}
 
 	if len(visibleGroups) > 0 {
-		sb.WriteString("item --gap -- Groups:\n")
+		sb.WriteString("item --gap == Groups ==\n")
 		for _, group := range visibleGroups {
 			sb.WriteString(fmt.Sprintf("item group%d %s\n", group.ID, group.Name))
 		}
 	}
 
 	if len(ungroupedImages) > 0 {
-		sb.WriteString("item --gap -- Images:\n")
+		sb.WriteString("item --gap == Images ==\n")
 		for _, img := range ungroupedImages {
 			sizeStr := formatSize(img.Size)
 			extractedTag := ""
@@ -155,7 +192,7 @@ func (mb *MenuBuilder) buildMainMenu() string {
 		}
 	}
 
-	sb.WriteString("item --gap -- Options:\n")
+	sb.WriteString("item --gap == Options ==\n")
 	sb.WriteString("item local Boot from Local Disk\n")
 	sb.WriteString("item shell Drop to iPXE shell\n")
 	sb.WriteString("item reboot Reboot\n")
@@ -163,7 +200,7 @@ func (mb *MenuBuilder) buildMainMenu() string {
 
 	timeoutMs := mb.menuTimeoutMs()
 	if mb.nextBootImageID > 0 && timeoutMs == 0 {
-		timeoutMs = 10000 // 10s override when next boot is set but global timeout is disabled
+		timeoutMs = 10000
 	}
 
 	if timeoutMs > 0 {
@@ -187,6 +224,8 @@ func (mb *MenuBuilder) buildGroupMenus() string {
 		sb.WriteString(fmt.Sprintf(":group%d\n", group.ID))
 		sb.WriteString(fmt.Sprintf("menu %s - %s\n", mb.menuTitle(), group.Name))
 
+		sb.WriteString(mb.headerInfo())
+
 		childGroups := mb.getChildGroups(group.ID)
 		groupImages := mb.getGroupImages(group.ID)
 
@@ -198,7 +237,7 @@ func (mb *MenuBuilder) buildGroupMenus() string {
 				}
 			}
 			if len(visibleChildren) > 0 {
-				sb.WriteString("item --gap -- Subgroups:\n")
+				sb.WriteString("item --gap == Subgroups ==\n")
 				for _, child := range visibleChildren {
 					sb.WriteString(fmt.Sprintf("item group%d %s\n", child.ID, child.Name))
 				}
@@ -206,7 +245,7 @@ func (mb *MenuBuilder) buildGroupMenus() string {
 		}
 
 		if len(groupImages) > 0 {
-			sb.WriteString("item --gap -- Images:\n")
+		sb.WriteString("item --gap == Images ==\n")
 			for _, img := range groupImages {
 				sizeStr := formatSize(img.Size)
 				extractedTag := ""
@@ -217,11 +256,11 @@ func (mb *MenuBuilder) buildGroupMenus() string {
 			}
 		}
 
-		sb.WriteString("item --gap -- Navigation:\n")
+		sb.WriteString("item --gap == Navigation ==\n")
 		if group.ParentID != nil {
-			sb.WriteString(fmt.Sprintf("item group%d Back to %s\n", *group.ParentID, group.Parent.Name))
+			sb.WriteString(fmt.Sprintf("item group%d <-- Back to %s\n", *group.ParentID, group.Parent.Name))
 		} else {
-			sb.WriteString("item start Back to Main Menu\n")
+			sb.WriteString("item start <-- Back to Main Menu\n")
 		}
 		sb.WriteString("item local Boot from Local Disk\n")
 		sb.WriteString("item shell Drop to iPXE shell\n")
@@ -343,10 +382,9 @@ func (mb *MenuBuilder) buildFooter() string {
 		sb.WriteString(":tools\n")
 		sb.WriteString(fmt.Sprintf("menu %s - Tools\n", mb.menuTitle()))
 		for _, t := range mb.enabledTools {
-			sb.WriteString(fmt.Sprintf("item tool-%s %s\n", t.Name, t.DisplayName))
+			sb.WriteString(mb.formatToolItem(&t))
 		}
-		sb.WriteString("item --gap --\n")
-		sb.WriteString("item back << Back to main menu\n")
+		sb.WriteString("item back <-- Back to Main Menu\n")
 		sb.WriteString("choose selected || goto start\n")
 		sb.WriteString("goto ${selected}\n\n")
 

@@ -56,7 +56,7 @@ func (s *Server) Start() error {
 	addr := fmt.Sprintf(":%d", s.port)
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
-		return fmt.Errorf("failed to start NBD server: %w", err)
+		return fmt.Errorf("failed to start NBD server on port %d: %w (use --nbd-port to change)", s.port, err)
 	}
 
 	s.listener = listener

@@ -1,6 +1,7 @@
 package extractor
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -9,11 +10,26 @@ import (
 	"path/filepath"
 	"strings"
 
+	"bootimus/internal/toolpath"
 	"bootimus/internal/udf"
 	"bootimus/internal/wim"
 
 	"github.com/kdomanski/iso9660"
 )
+
+func isDiskFull(err error) bool {
+	if err == nil {
+		return false
+	}
+	// Unwrap to find the root cause
+	root := err
+	for u := errors.Unwrap(root); u != nil; u = errors.Unwrap(root) {
+		root = u
+	}
+	msg := root.Error()
+	return strings.Contains(msg, "no space left on device") ||
+		strings.Contains(msg, "not enough space on the disk")
+}
 
 func safeGetChildren(dir *iso9660.File) ([]*iso9660.File, error) {
 	all, err := dir.GetAllChildren()
@@ -106,7 +122,7 @@ func relativeISOBase(dataDir, isoPath string) string {
 }
 
 func (e *Extractor) extractViaBsdtar(isoPath string) (*BootFiles, error) {
-	bsdtarPath, err := exec.LookPath("bsdtar")
+	bsdtarPath, err := toolpath.LookPath("bsdtar")
 	if err != nil {
 		return nil, fmt.Errorf("bsdtar not available: %w", err)
 	}
@@ -898,15 +914,24 @@ func (e *Extractor) extractDirectory(dir *iso9660.File, destPath, isoPath string
 
 		if child.IsDir() {
 			if err := os.MkdirAll(childDestPath, 0755); err != nil {
+				if isDiskFull(err) {
+					return err
+				}
 				log.Printf("Warning: failed to create directory %s: %v (skipping)", childDestPath, err)
 				continue
 			}
 
 			if err := e.extractDirectory(child, childDestPath, childISOPath); err != nil {
+				if isDiskFull(err) {
+					return err
+				}
 				log.Printf("Warning: error extracting directory %s: %v (continuing)", childISOPath, err)
 			}
 		} else {
 			if err := e.extractFile(child, childDestPath, childISOPath); err != nil {
+				if isDiskFull(err) {
+					return err
+				}
 				log.Printf("Warning: failed to extract file %s: %v (skipping)", childISOPath, err)
 				continue
 			}
@@ -1304,6 +1329,9 @@ func (e *Extractor) extractUDFContents(reader *udf.Reader, destDir string) error
 
 	for _, file := range root {
 		if err := e.extractUDFFile(reader, file, destDir, file.Name()); err != nil {
+			if isDiskFull(err) {
+				return err
+			}
 			log.Printf("Warning: failed to extract %s: %v", file.Name(), err)
 		}
 	}
@@ -1327,6 +1355,9 @@ func (e *Extractor) extractUDFFile(reader *udf.Reader, file *udf.File, destDir, 
 		for _, child := range children {
 			childPath := filepath.Join(relativePath, child.Name())
 			if err := e.extractUDFFile(reader, child, destDir, childPath); err != nil {
+				if isDiskFull(err) {
+					return err
+				}
 				log.Printf("Warning: failed to extract %s: %v", childPath, err)
 			}
 		}

@@ -17,7 +17,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const (
+var (
 	colorReset      = "\033[0m"
 	colorLightGreen = "\033[92m"
 	colorYellow     = "\033[33m"

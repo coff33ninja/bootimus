@@ -2411,7 +2411,12 @@ async function extractImage(filename, name) {
         } else {
             delete extractionProgress[filename];
             syncImagesProgress(filename);
-            showAlert(data.error || 'Extraction failed', 'error');
+            const errMsg = data.error || 'Extraction failed';
+            showAlert(errMsg, 'error');
+            // Detect disk-full and show persistent warning
+            if (/disk\s*(full|space)|not enough space|no space left/i.test(errMsg)) {
+                showAlert('⚠ Disk space exhausted — free up space, then re-extract the image.', 'warning', true);
+            }
         }
     } catch (err) {
         clearInterval(poll);
@@ -3707,7 +3712,11 @@ function setupUpload() {
                 e.target.reset();
                 fileNameDisplay.textContent = '';
             } else {
-                showAlert(data.error || 'Upload failed', 'error');
+                const errMsg = data.error || 'Upload failed';
+                showAlert(errMsg, 'error');
+                if (/disk\s*(full|space)|not enough space|no space left/i.test(errMsg)) {
+                    showAlert('⚠ Disk space exhausted — free up space, then upload again.', 'warning', true);
+                }
             }
         } catch (err) {
             showAlert('Failed to upload image: ' + err.message, 'error');
@@ -3738,7 +3747,7 @@ function closeModal(id) {
     document.getElementById(id).classList.remove('active');
 }
 
-function showAlert(message, type) {
+function showAlert(message, type, persistent) {
     // Create notification container if it doesn't exist
     let container = document.getElementById('notification-container');
     if (!container) {
@@ -3752,23 +3761,37 @@ function showAlert(message, type) {
     alertDiv.className = `notification notification-${type}`;
     alertDiv.textContent = message;
 
+    if (persistent) {
+        alertDiv.classList.add('notification-persistent');
+        const closeBtn = document.createElement('span');
+        closeBtn.className = 'notification-close';
+        closeBtn.textContent = '×';
+        closeBtn.addEventListener('click', () => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 300);
+        });
+        alertDiv.appendChild(closeBtn);
+    }
+
     // Add to container
     container.appendChild(alertDiv);
 
     // Trigger animation
     setTimeout(() => alertDiv.classList.add('show'), 10);
 
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        alertDiv.classList.remove('show');
-        setTimeout(() => alertDiv.remove(), 300);
-    }, 5000);
+    // Auto-remove after 5 seconds (unless persistent)
+    if (!persistent) {
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 300);
+        }, 5000);
 
-    // Click to dismiss
-    alertDiv.addEventListener('click', () => {
-        alertDiv.classList.remove('show');
-        setTimeout(() => alertDiv.remove(), 300);
-    });
+        // Click to dismiss
+        alertDiv.addEventListener('click', () => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 300);
+        });
+    }
 }
 
 function formatBytes(bytes) {

@@ -1,0 +1,74 @@
+name: Build Custom iPXE
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'bootloaders/build/**'
+
+jobs:
+  build-ipxe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-x86-64-linux-gnu \
+            gcc-aarch64-linux-gnu \
+            binutils \
+            zlib1g-dev \
+            liblzma-dev
+
+      - name: Configure and build iPXE
+        run: |
+          git clone --depth 1 --branch v1.21.1 https://git.ipxe.org/ipxe.git ipxe-src
+
+          # Enable framebuffer, PNG, colour commands
+          cat >> ipxe-src/src/config/local/general.h << 'ENDCONFIG'
+          #define CONSOLE_FRAMEBUFFER
+          #define IMAGE_PNG
+          #define COLOUR_CMD
+          #define CPAIR_CMD
+          ENDCONFIG
+
+          cat >> ipxe-src/src/config/local/console.h << 'ENDCONFIG'
+          #define FB_WIDTH 1024
+          #define FB_HEIGHT 768
+          #define FB_DEPTH 32
+          ENDCONFIG
+
+          cd ipxe-src/src
+
+          # Copy our embed.ipxe
+          cp "${{ github.workspace }}/bootloaders/default/embed.ipxe" embed.ipxe
+
+          # Build BIOS undionly.kpxe
+          make bin/undionly.kpxe EMBED=embed.ipxe
+
+          # Build UEFI x64 bootimus.efi (with embedded script)
+          make bin-x86_64-efi/bootimus.efi EMBED=embed.ipxe
+
+          # Build UEFI x64 plain ipxe.efi (no embedded script)
+          make bin-x86_64-efi/ipxe.efi
+
+          # Build ARM64 ipxe-arm64.efi
+          make bin-arm64-efi/ipxe.efi CROSS=aarch64-linux-gnu-
+          mv bin-arm64-efi/ipxe.efi bin-arm64-efi/ipxe-arm64.efi
+
+          mkdir -p "${{ github.workspace }}/dist/ipxe"
+          for f in bin/undionly.kpxe \
+                   bin-x86_64-efi/bootimus.efi \
+                   bin-x86_64-efi/ipxe.efi \
+                   bin-arm64-efi/ipxe-arm64.efi; do
+            [ -f "$f" ] && cp "$f" "${{ github.workspace }}/dist/ipxe/"
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipxe-binaries
+          path: dist/ipxe/
+          compression-level: 0

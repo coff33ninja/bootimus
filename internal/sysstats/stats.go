@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"syscall"
 	"time"
 
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -111,30 +110,6 @@ func getDiskStats(path string) (DiskStats, error) {
 	}, nil
 }
 
-func getDiskStatsManual(path string) (DiskStats, error) {
-	var stat syscall.Statfs_t
-	err := syscall.Statfs(path, &stat)
-	if err != nil {
-		return DiskStats{}, err
-	}
-
-	total := stat.Blocks * uint64(stat.Bsize)
-	free := stat.Bfree * uint64(stat.Bsize)
-	used := total - free
-	usedPercent := 0.0
-	if total > 0 {
-		usedPercent = float64(used) / float64(total) * 100
-	}
-
-	return DiskStats{
-		Path:        path,
-		Total:       total,
-		Used:        used,
-		Free:        free,
-		UsedPercent: usedPercent,
-	}, nil
-}
-
 func formatUptime(d time.Duration) string {
 	days := int(d.Hours() / 24)
 	hours := int(d.Hours()) % 24
@@ -165,7 +140,17 @@ func FormatBytes(bytes uint64) string {
 }
 
 func GetMonitoredPaths(dataDir string) []string {
-	paths := []string{"/"}
+	var root string
+	if runtime.GOOS == "windows" {
+		root = os.Getenv("SystemDrive")
+		if root == "" {
+			root = "C:"
+		}
+		root += "\\"
+	} else {
+		root = "/"
+	}
+	paths := []string{root}
 
 	if dataDir != "" {
 		if _, err := os.Stat(dataDir); err == nil {

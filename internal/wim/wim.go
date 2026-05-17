@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"bootimus/internal/toolpath"
 )
 
 type Manager struct {
@@ -14,9 +16,9 @@ type Manager struct {
 }
 
 func NewManager() (*Manager, error) {
-	wimlibPath, err := exec.LookPath("wimlib-imagex")
+	wimlibPath, err := toolpath.LookPath("wimlib-imagex")
 	if err != nil {
-		return nil, fmt.Errorf("wimlib-imagex not found in PATH: %w", err)
+		return nil, fmt.Errorf("wimlib-imagex not found: %w", err)
 	}
 
 	return &Manager{
@@ -25,7 +27,7 @@ func NewManager() (*Manager, error) {
 }
 
 func IsAvailable() bool {
-	_, err := exec.LookPath("wimlib-imagex")
+	_, err := toolpath.LookPath("wimlib-imagex")
 	return err == nil
 }
 
@@ -72,7 +74,12 @@ func (m *Manager) InjectDrivers(wimPath string, driverPaths []string, imageIndex
 			}
 			defer os.RemoveAll(tempExtractDir)
 
-			extractCmd := exec.Command("7z", "x", driverPath, fmt.Sprintf("-o%s", tempExtractDir), "-y")
+			sevenZPath, lookErr := toolpath.LookPath("7z")
+			if lookErr != nil {
+				log.Printf("Warning: 7z not found, skipping driver pack extraction: %s: %v", driverPath, lookErr)
+				continue
+			}
+			extractCmd := exec.Command(sevenZPath, "x", driverPath, fmt.Sprintf("-o%s", tempExtractDir), "-y")
 			if output, err := extractCmd.CombinedOutput(); err != nil {
 				log.Printf("Warning: Failed to extract driver pack %s: %v\nOutput: %s", driverPath, err, string(output))
 				continue
