@@ -22,6 +22,11 @@ jobs:
       - name: Setup MSVC (for CGO)
         uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Sync profiles
+        run: |
+          copy /y distro-profiles.json internal\profiles\distro-profiles.json
+          copy /y tools-profiles.json internal\tools\tools-profiles.json
+
       - name: Cache Go modules
         uses: actions/cache@v4
         with:
@@ -31,7 +36,7 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Build
-        run: go build -ldflags="-X bootimus/cmd.version=$(Get-Content VERSION)" -o dist/bootimus-windows-amd64.exe .
+        run: go build -ldflags="-w -s -X bootimus/internal/server.Version=$(Get-Content VERSION)" -o dist\bootimus-windows-amd64.exe .
 
       - name: Vet
         run: go vet ./...
