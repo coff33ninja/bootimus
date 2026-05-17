@@ -444,3 +444,11 @@ Contributions welcome! Please open an issue or pull request.
 - **GitHub**: https://github.com/garybowers/bootimus
 - **Docker Hub**: https://hub.docker.com/r/garybowers/bootimus
 - **Documentation**: https://github.com/garybowers/bootimus/tree/main/docs
+
+## Acknowledgments
+
+A huge thank you to [**longpanda**](https://github.com/ventoy) for creating [**Ventoy**](https://www.ventoy.net) and [**iVentoy**](https://www.iventoy.com) — two brilliant tools that revolutionised OS deployment from USB and over the network. I've been a daily Ventoy user and tinkerer since the early days, and iVentoy has been my go-to PXE server since its release.
+
+To [**garybowers**](https://github.com/garybowers) — thank you for building bootimus. I stumbled upon it while researching updates for the clunky iVentoy experience (I later discovered you also maintained the [iVentoy Docker image](https://github.com/garybowers/iventoy_docker) before building bootimus as the fully open-source alternative!), and I couldn't help diving in to find solutions to make it run properly on Windows. This project has been a joy to contribute to, and I hope the Windows support and ongoing improvements help others discover bootimus too. Keep up the amazing work.
+
+— **coff33ninja**
