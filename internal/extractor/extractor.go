@@ -294,6 +294,7 @@ func (e *Extractor) detectAndExtract(img *iso9660.Image, isoPath string) (*BootF
 		detector func(*iso9660.Image) (*BootFiles, error)
 	}{
 		{"Windows", e.detectWindows},
+		{"Windows Legacy", e.detectWindowsLegacy},
 		{"Ubuntu/Debian Family", e.detectUbuntuDebian},
 		{"Arch Linux Family", e.detectArch},
 		{"Fedora/RHEL Family", e.detectFedoraRHEL},
@@ -344,14 +345,26 @@ func detectDistroName(img *iso9660.Image, isoPath string) string {
 	filename := strings.ToLower(filepath.Base(isoPath))
 
 	distroPatterns := map[string]string{
-		"windows":     "windows",
-		"win10":       "windows",
-		"win11":       "windows",
-		"win7":        "windows",
-		"win8":        "windows",
-		"server2022":  "windows",
-		"server2019":  "windows",
-		"server2016":  "windows",
+		"windows":         "windows",
+		"win10":           "windows",
+		"win11":           "windows",
+		"win7":            "windows",
+		"win8":            "windows",
+		"server2022":      "windows",
+		"server2019":      "windows",
+		"server2016":      "windows",
+		"windows-legacy":  "windows-legacy",
+		"winxp":           "windows-legacy",
+		"win2k":           "windows-legacy",
+		"winnt":           "windows-legacy",
+		"windows xp":      "windows-legacy",
+		"windows 2000":    "windows-legacy",
+		"windows nt":      "windows-legacy",
+		"windows me":      "windows-legacy",
+		"windows 98":      "windows-legacy",
+		"windows 95":      "windows-legacy",
+		"win98":           "windows-legacy",
+		"win95":           "windows-legacy",
 		"popos":       "popos",
 		"pop-os":      "popos",
 		"pop_os":      "popos",
@@ -823,6 +836,30 @@ func (e *Extractor) detectWindows(img *iso9660.Image) (*BootFiles, error) {
 	return nil, fmt.Errorf("not Windows ISO (found: BCD=%v, boot.sdi=%v, boot.wim=%v)", bcdPath != "", bootSdiPath != "", bootWimPath != "")
 }
 
+func (e *Extractor) detectWindowsLegacy(img *iso9660.Image) (*BootFiles, error) {
+	legacyMarkers := []string{
+		"/I386/SETUPLDR.BIN",
+		"/i386/setupldr.bin",
+		"/WIN51",
+		"/win51",
+		"/WIN51IC",
+		"/win51ic",
+	}
+
+	for _, marker := range legacyMarkers {
+		if fileExists(img, marker) {
+			log.Printf("Detected legacy Windows ISO - marker: %s", marker)
+			return &BootFiles{
+				Kernel: "",
+				Initrd: "",
+				Distro: "windows-legacy",
+			}, nil
+		}
+	}
+
+	return nil, fmt.Errorf("not legacy Windows ISO")
+}
+
 func (e *Extractor) cacheBootFiles(files *BootFiles, img *iso9660.Image, isoPath string) error {
 	isoBase := relativeISOBase(e.dataDir, isoPath)
 	bootFilesDir := filepath.Join(e.dataDir, isoBase)
@@ -851,6 +888,20 @@ func (e *Extractor) cacheBootFiles(files *BootFiles, img *iso9660.Image, isoPath
 		files.BootParams = bootWimDest
 
 		log.Printf("Extracted Windows boot files: BCD, boot.sdi, boot.wim to %s", bootFilesDir)
+		return nil
+	}
+
+	if files.Distro == "windows-legacy" {
+		log.Printf("Legacy Windows ISO (no boot files to extract)")
+		extractedDir := filepath.Join(bootFilesDir, "iso")
+		if err := os.MkdirAll(extractedDir, 0755); err != nil {
+			return fmt.Errorf("failed to create extracted ISO directory: %w", err)
+		}
+		log.Printf("Extracting full ISO contents to %s", extractedDir)
+		if err := e.extractISOContents(img, extractedDir); err != nil {
+			return fmt.Errorf("failed to extract full ISO contents: %w", err)
+		}
+		files.ExtractedDir = extractedDir
 		return nil
 	}
 
@@ -1185,6 +1236,7 @@ func (e *Extractor) detectAndExtractUnified(reader FileSystemReader, isoPath str
 		detector func(FileSystemReader) (*BootFiles, error)
 	}{
 		{"Windows", e.detectWindowsUnified},
+		{"Windows Legacy", e.detectWindowsLegacyUnified},
 		{"Ubuntu/Debian Family", e.detectUbuntuDebianUnified},
 		{"Arch Linux Family", e.detectArchUnified},
 		{"Fedora/RHEL Family", e.detectFedoraRHELUnified},

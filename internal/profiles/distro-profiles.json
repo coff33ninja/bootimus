@@ -807,6 +807,29 @@
       "boot_method": "kernel"
     },
     {
+      "id": "windows-legacy",
+      "display_name": "Windows Legacy (XP/2000/NT4/9x)",
+      "family": "windows",
+      "filename_patterns": [
+        "windows-legacy",
+        "winxp",
+        "win2k",
+        "winnt",
+        "windows xp",
+        "windows 2000",
+        "windows nt",
+        "windows me",
+        "windows 98",
+        "windows 95"
+      ],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "autounattend",
+      "boot_method": ""
+    },
+    {
       "id": "clearlinux",
       "display_name": "Clear Linux",
       "family": "clearlinux",

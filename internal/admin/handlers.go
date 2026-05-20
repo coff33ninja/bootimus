@@ -1193,7 +1193,11 @@ func (h *Handler) ExtractImage(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	image.Extracted = true
 	image.Distro = bootFiles.Distro
-	image.BootMethod = "kernel"
+	if bootFiles.Kernel != "" {
+		image.BootMethod = "kernel"
+	} else {
+		image.BootMethod = "sanboot"
+	}
 	image.KernelPath = bootFiles.Kernel
 	image.InitrdPath = bootFiles.Initrd
 	image.SquashfsPath = bootFiles.SquashfsPath

@@ -12,14 +12,26 @@ func detectDistroNameUnified(reader FileSystemReader, isoPath string) string {
 	filename := strings.ToLower(filepath.Base(isoPath))
 
 	distroPatterns := map[string]string{
-		"windows":     "windows",
-		"win10":       "windows",
-		"win11":       "windows",
-		"win7":        "windows",
-		"win8":        "windows",
-		"server2022":  "windows",
-		"server2019":  "windows",
-		"server2016":  "windows",
+		"windows":         "windows",
+		"win10":           "windows",
+		"win11":           "windows",
+		"win7":            "windows",
+		"win8":            "windows",
+		"server2022":      "windows",
+		"server2019":      "windows",
+		"server2016":      "windows",
+		"windows-legacy":  "windows-legacy",
+		"winxp":           "windows-legacy",
+		"win2k":           "windows-legacy",
+		"winnt":           "windows-legacy",
+		"windows xp":      "windows-legacy",
+		"windows 2000":    "windows-legacy",
+		"windows nt":      "windows-legacy",
+		"windows me":      "windows-legacy",
+		"windows 98":      "windows-legacy",
+		"windows 95":      "windows-legacy",
+		"win98":           "windows-legacy",
+		"win95":           "windows-legacy",
 		"popos":       "popos",
 		"pop-os":      "popos",
 		"pop_os":      "popos",
@@ -461,6 +473,30 @@ func (e *Extractor) detectWindowsUnified(reader FileSystemReader) (*BootFiles, e
 	return nil, fmt.Errorf("not Windows ISO")
 }
 
+func (e *Extractor) detectWindowsLegacyUnified(reader FileSystemReader) (*BootFiles, error) {
+	legacyMarkers := []string{
+		"/I386/SETUPLDR.BIN",
+		"/i386/setupldr.bin",
+		"/WIN51",
+		"/win51",
+		"/WIN51IC",
+		"/win51ic",
+	}
+
+	for _, marker := range legacyMarkers {
+		if reader.FileExists(marker) {
+			log.Printf("Detected legacy Windows ISO - marker: %s", marker)
+			return &BootFiles{
+				Kernel: "",
+				Initrd: "",
+				Distro: "windows-legacy",
+			}, nil
+		}
+	}
+
+	return nil, fmt.Errorf("not legacy Windows ISO")
+}
+
 func (e *Extractor) cacheBootFilesUnified(files *BootFiles, reader FileSystemReader, isoPath string) error {
 	isoBase := relativeISOBase(e.dataDir, isoPath)
 	bootFilesDir := filepath.Join(e.dataDir, isoBase)
@@ -469,18 +505,23 @@ func (e *Extractor) cacheBootFilesUnified(files *BootFiles, reader FileSystemRea
 		return fmt.Errorf("failed to create boot files subdirectory: %w", err)
 	}
 
-	if files.Distro == "windows" {
+	if files.Distro == "windows" || files.Distro == "windows-legacy" {
 		extractedDir := filepath.Join(bootFilesDir, "iso")
 		if err := os.MkdirAll(extractedDir, 0755); err != nil {
 			return fmt.Errorf("failed to create extracted ISO directory: %w", err)
 		}
 
-		log.Printf("Extracting full Windows ISO contents to %s", extractedDir)
+		log.Printf("Extracting full %s ISO contents to %s", files.Distro, extractedDir)
 		if err := reader.ExtractAll(extractedDir); err != nil {
 			return fmt.Errorf("failed to extract full ISO contents: %w", err)
 		}
 
 		files.ExtractedDir = extractedDir
+
+		if files.Distro == "windows-legacy" {
+			log.Printf("Legacy Windows ISO (no boot files to map)")
+			return nil
+		}
 
 		bcdDest := filepath.Join(extractedDir, strings.TrimPrefix(files.Kernel, "/"))
 		files.Kernel = bcdDest
