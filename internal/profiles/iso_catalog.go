@@ -69,9 +69,11 @@ func versionCompare(a, b string) int {
 func groupReleasesByVersion(releases []ISORelease) []VersionGroup {
 	groups := make(map[string][]ISORelease)
 	var versions []string
+	var unversioned []ISORelease
 	for _, r := range releases {
 		v := extractVersion(r.Label)
 		if v == "" {
+			unversioned = append(unversioned, r)
 			continue
 		}
 		if _, ok := groups[v]; !ok {
@@ -80,7 +82,14 @@ func groupReleasesByVersion(releases []ISORelease) []VersionGroup {
 		groups[v] = append(groups[v], r)
 	}
 	if len(versions) == 0 {
-		return nil
+		if len(unversioned) == 0 {
+			return nil
+		}
+		return []VersionGroup{{
+			Version:  "Other",
+			IsLatest: false,
+			Releases: unversioned,
+		}}
 	}
 
 	sort.Slice(versions, func(i, j int) bool {
@@ -93,6 +102,13 @@ func groupReleasesByVersion(releases []ISORelease) []VersionGroup {
 			Version:  v,
 			IsLatest: i == 0,
 			Releases: groups[v],
+		})
+	}
+	if len(unversioned) > 0 {
+		result = append(result, VersionGroup{
+			Version:  "Other",
+			IsLatest: false,
+			Releases: unversioned,
 		})
 	}
 	return result
