@@ -3,6 +3,10 @@ package profiles
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
+	"sort"
+	"strconv"
+	"strings"
 )
 
 type ISOCatalog struct {
@@ -11,11 +15,12 @@ type ISOCatalog struct {
 }
 
 type ISOEntry struct {
-	ID       string       `json:"id"`
-	Name     string       `json:"name"`
-	Family   string       `json:"family"`
-	Mirrors  []ISOMirror  `json:"mirrors"`
-	Releases []ISORelease `json:"releases"`
+	ID            string         `json:"id"`
+	Name          string         `json:"name"`
+	Family        string         `json:"family"`
+	Mirrors       []ISOMirror    `json:"mirrors"`
+	Releases      []ISORelease   `json:"releases"`
+	VersionGroups []VersionGroup `json:"version_groups,omitempty"`
 }
 
 type ISOMirror struct {
@@ -27,6 +32,70 @@ type ISORelease struct {
 	Label    string `json:"label"`
 	Path     string `json:"path"`
 	SizeHint string `json:"size_hint,omitempty"`
+}
+
+type VersionGroup struct {
+	Version  string       `json:"version"`
+	IsLatest bool         `json:"is_latest"`
+	Releases []ISORelease `json:"releases"`
+}
+
+var versionPrefixRe = regexp.MustCompile(`^(\d[\d.]*)`)
+
+func extractVersion(label string) string {
+	m := versionPrefixRe.FindStringSubmatch(label)
+	if m == nil {
+		return ""
+	}
+	return m[1]
+}
+
+func versionCompare(a, b string) int {
+	pa := strings.Split(a, ".")
+	pb := strings.Split(b, ".")
+	for i := 0; i < len(pa) && i < len(pb); i++ {
+		ia, erra := strconv.Atoi(pa[i])
+		ib, errb := strconv.Atoi(pb[i])
+		if erra != nil || errb != nil {
+			return strings.Compare(a, b)
+		}
+		if ia != ib {
+			return ia - ib
+		}
+	}
+	return len(pa) - len(pb)
+}
+
+func groupReleasesByVersion(releases []ISORelease) []VersionGroup {
+	groups := make(map[string][]ISORelease)
+	var versions []string
+	for _, r := range releases {
+		v := extractVersion(r.Label)
+		if v == "" {
+			continue
+		}
+		if _, ok := groups[v]; !ok {
+			versions = append(versions, v)
+		}
+		groups[v] = append(groups[v], r)
+	}
+	if len(versions) == 0 {
+		return nil
+	}
+
+	sort.Slice(versions, func(i, j int) bool {
+		return versionCompare(versions[i], versions[j]) > 0
+	})
+
+	var result []VersionGroup
+	for i, v := range versions {
+		result = append(result, VersionGroup{
+			Version:  v,
+			IsLatest: i == 0,
+			Releases: groups[v],
+		})
+	}
+	return result
 }
 
 func LoadISOCatalog() (*ISOCatalog, error) {
@@ -43,13 +112,17 @@ func LoadISOCatalog() (*ISOCatalog, error) {
 		if len(p.Releases) == 0 {
 			continue
 		}
-		distros = append(distros, ISOEntry{
+		entry := ISOEntry{
 			ID:       p.ID,
 			Name:     p.DisplayName,
 			Family:   p.Family,
 			Mirrors:  p.Mirrors,
 			Releases: p.Releases,
-		})
+		}
+		if p.Family != "windows-archive" {
+			entry.VersionGroups = groupReleasesByVersion(p.Releases)
+		}
+		distros = append(distros, entry)
 	}
 	return &ISOCatalog{Version: pf.Version, Distros: distros}, nil
 }

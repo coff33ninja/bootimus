@@ -4230,37 +4230,58 @@ async function switchGetImagesTab(tab) {
     }
 }
 
+function renderGetISORow(r, distro) {
+    const realIdx = distro.releases.findIndex(rel => rel.path === r.path);
+    const rowKey = `${distro.id}-${realIdx}`;
+    const defaultBase = (distro.mirrors[0] && distro.mirrors[0].base) || '';
+    const defaultURL = defaultBase.replace(/\/+$/, '') + r.path;
+    const mirrorOpts = (distro.mirrors || []).map(m =>
+        `<option value="${escapeHtml(m.base)}">${escapeHtml(m.region)}</option>`
+    ).join('');
+    return `<div class="get-iso-row">
+        <div class="get-iso-label" title="${escapeHtml(r.label)}">${escapeHtml(r.label)}</div>
+        <select class="get-iso-mirror-sel" data-row="${escapeHtml(rowKey)}" data-path="${escapeHtml(r.path)}" onchange="updateGetISORowURL(this)">${mirrorOpts}</select>
+        <input type="text" id="get-iso-url-${escapeHtml(rowKey)}" class="get-iso-url" value="${escapeHtml(defaultURL)}">
+        <div id="get-iso-actions-${escapeHtml(rowKey)}" class="get-iso-actions">
+            <button type="button" class="btn btn-sm" onclick="downloadFromGetISO('${jsAttrEscape(rowKey)}', '${escapeHtml(distro.name)}', '${escapeHtml(r.label)}')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download
+            </button>
+        </div>
+    </div>`;
+}
+
 function renderGetImagesList(filter) {
     const container = document.getElementById('get-images-list');
     if (!container) return;
     const q = (filter || '').trim().toLowerCase();
     let html = '';
     for (const distro of (isoCatalog.distros || [])) {
+        if (distro.family === 'windows-archive') continue;
         const matching = (distro.releases || []).filter(r =>
             !q || distro.name.toLowerCase().includes(q) || r.label.toLowerCase().includes(q) || distro.id.toLowerCase().includes(q)
         );
         if (matching.length === 0) continue;
         html += `<div class="get-iso-distro"><h3>${escapeHtml(distro.name)}</h3>`;
-        for (let ri = 0; ri < matching.length; ri++) {
-            const r = matching[ri];
-            const realIdx = distro.releases.indexOf(r);
-            const rowKey = `${distro.id}-${realIdx}`;
-            const defaultBase = (distro.mirrors[0] && distro.mirrors[0].base) || '';
-            const defaultURL = defaultBase.replace(/\/+$/, '') + r.path;
-            const mirrorOpts = (distro.mirrors || []).map(m =>
-                `<option value="${escapeHtml(m.base)}">${escapeHtml(m.region)}</option>`
-            ).join('');
-            html += `<div class="get-iso-row">
-                <div class="get-iso-label" title="${escapeHtml(r.label)}">${escapeHtml(r.label)}</div>
-                <select class="get-iso-mirror-sel" data-row="${escapeHtml(rowKey)}" data-path="${escapeHtml(r.path)}" onchange="updateGetISORowURL(this)">${mirrorOpts}</select>
-                <input type="text" id="get-iso-url-${escapeHtml(rowKey)}" class="get-iso-url" value="${escapeHtml(defaultURL)}">
-                <div id="get-iso-actions-${escapeHtml(rowKey)}" class="get-iso-actions">
-                    <button type="button" class="btn btn-sm" onclick="downloadFromGetISO('${escapeHtml(rowKey)}', '${escapeHtml(distro.name)}', '${escapeHtml(r.label)}')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Download
-                    </button>
-                </div>
-            </div>`;
+        const groups = distro.version_groups;
+        if (groups && groups.length > 0) {
+            for (const vg of groups) {
+                const grpMatching = (vg.releases || []).filter(r => matching.some(m => m.path === r.path));
+                if (grpMatching.length === 0) continue;
+                const badge = vg.is_latest
+                    ? '<span class="badge badge-info" style="margin-left:8px;vertical-align:middle;">Latest</span>'
+                    : '<span class="badge badge-secondary" style="margin-left:8px;vertical-align:middle;">Previous</span>';
+                html += `<div class="get-iso-version-group">
+                    <h4 style="margin:12px 0 6px 0;font-size:14px;color:var(--text-secondary);">${escapeHtml(vg.version)} ${badge}</h4>`;
+                for (const r of grpMatching) {
+                    html += renderGetISORow(r, distro);
+                }
+                html += '</div>';
+            }
+        } else {
+            for (const r of matching) {
+                html += renderGetISORow(r, distro);
+            }
         }
         html += '</div>';
     }
