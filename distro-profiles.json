@@ -1136,9 +1136,85 @@
         {
           "region": "Internet Archive",
           "base": "https://archive.org/download/english_windows_collection"
+        },
+        {
+          "region": "Windows 7 Collection (MSDN)",
+          "base": "https://archive.org/download/Windows-7-Collection"
         }
       ],
       "releases": [
+        {
+          "label": "Starter RTM x86",
+          "path": "/Windows%207/Starter/RTM/en_windows_7_starter_x86_dvd_x15-68956.iso"
+        },
+        {
+          "label": "Starter SP1 x86",
+          "path": "/Windows%207/Starter/SP1/en_windows_7_starter_with_sp1_x86_dvd_u_678562.iso"
+        },
+        {
+          "label": "Home Basic RTM x86",
+          "path": "/Windows%207/Home%20Basic/RTM/en_windows_7_home_basic_x86_dvd_x15-65654.iso"
+        },
+        {
+          "label": "Home Basic SP1 x86",
+          "path": "/Windows%207/Home%20Basic/SP1/en_windows_7_home_basic_with_sp1_x86_dvd_u_676470.iso"
+        },
+        {
+          "label": "Home Premium RTM x64",
+          "path": "/Windows%207/Home%20Premium/RTM/en_windows_7_home_premium_x64_dvd_x15-65733.iso"
+        },
+        {
+          "label": "Home Premium RTM x86",
+          "path": "/Windows%207/Home%20Premium/RTM/en_windows_7_home_premium_x86_dvd_x15-65732.iso"
+        },
+        {
+          "label": "Home Premium SP1 x64",
+          "path": "/Windows%207/Home%20Premium/SP1/en_windows_7_home_premium_with_sp1_x64_dvd_u_676549.iso"
+        },
+        {
+          "label": "Home Premium SP1 x86",
+          "path": "/Windows%207/Home%20Premium/SP1/en_windows_7_home_premium_with_sp1_x86_dvd_u_676701.iso"
+        },
+        {
+          "label": "Professional RTM x64",
+          "path": "/Windows%207/Professional/RTM/en_windows_7_professional_x64_dvd_x15-65805.iso"
+        },
+        {
+          "label": "Professional RTM x86",
+          "path": "/Windows%207/Professional/RTM/en_windows_7_professional_x86_dvd_x15-65804.iso"
+        },
+        {
+          "label": "Professional SP1 x64",
+          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_x64_dvd_u_676939.iso"
+        },
+        {
+          "label": "Professional SP1 x86",
+          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_x86_dvd_u_677056.iso"
+        },
+        {
+          "label": "Professional VL SP1 x64",
+          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_vl_build_x64_dvd_u_677791.iso"
+        },
+        {
+          "label": "Professional VL SP1 x86",
+          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_vl_build_x86_dvd_u_677896.iso"
+        },
+        {
+          "label": "Enterprise RTM x64",
+          "path": "/Windows%207/Enterprise/RTM/en_windows_7_enterprise_x64_dvd_x15-70749.iso"
+        },
+        {
+          "label": "Enterprise RTM x86",
+          "path": "/Windows%207/Enterprise/RTM/en_windows_7_enterprise_x86_dvd_x15-70745.iso"
+        },
+        {
+          "label": "Enterprise SP1 x64",
+          "path": "/Windows%207/Enterprise/SP1/en_windows_7_enterprise_with_sp1_x64_dvd_u_677651.iso"
+        },
+        {
+          "label": "Enterprise SP1 x86",
+          "path": "/Windows%207/Enterprise/SP1/en_windows_7_enterprise_with_sp1_x86_dvd_u_677710.iso"
+        },
         {
           "label": "Ultimate RTM x64",
           "path": "/Windows%207/RTM/en_windows_7_ultimate_x64_dvd_x15-65922.iso"
