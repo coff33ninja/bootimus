@@ -56,8 +56,12 @@
           "path": "/24.04.4/ubuntu-24.04.4-live-server-amd64.iso"
         },
         {
-          "label": "22.04 LTS Desktop (amd64)",
-          "path": "/22.04.5/ubuntu-22.04.5-desktop-amd64.iso"
+          "label": "26.04 LTS Desktop (amd64)",
+          "path": "/26.04/ubuntu-26.04-desktop-amd64.iso"
+        },
+        {
+          "label": "26.04 LTS Server (amd64)",
+          "path": "/26.04/ubuntu-26.04-live-server-amd64.iso"
         }
       ]
     },
@@ -548,6 +552,14 @@
         {
           "label": "3.20 Virtual (x86_64)",
           "path": "/alpine-virt-3.20.3-x86_64.iso"
+        },
+        {
+          "label": "3.23.4 Extended (x86_64)",
+          "path": "/alpine-extended-3.23.4-x86_64.iso"
+        },
+        {
+          "label": "3.23.4 Virt (x86_64)",
+          "path": "/alpine-virt-3.23.4-x86_64.iso"
         }
       ]
     },
@@ -880,12 +892,12 @@
           "path": "/Windows%2095/Microsoft%20Windows%2095B%20%284.00.1111%29%20%28OSR2%29/windows95b.iso"
         },
         {
-          "label": "95B OSR2.1 (4.10.1111)",
-          "path": "/Windows%2095/Microsoft%20Windows%2095B%20%284.10.1111%29%20%28OSR2.1%29/win95_full_ar.osr2_en.iso"
-        },
-        {
           "label": "95C OSR2.5 (4.03.1216)",
           "path": "/Windows%2095/Microsoft%20Windows%2095C%20%284.03.1216%29%20%28OSR2.5%29%20%281997-11-26%29/Win95_OSR25.iso"
+        },
+        {
+          "label": "95B OSR2.1 (4.10.1111)",
+          "path": "/Windows%2095/Microsoft%20Windows%2095B%20%284.10.1111%29%20%28OSR2.1%29/win95_full_ar.osr2_en.iso"
         }
       ]
     },
@@ -908,20 +920,20 @@
       ],
       "releases": [
         {
-          "label": "98 First Edition Upgrade",
-          "path": "/Windows%2098/First%20Edition%20Upgrade%20CD/Microsoft%20Windows%2098%20Upgrade%20%28X03-30205%29%20%281998%29.iso"
-        },
-        {
           "label": "98 Second Edition Upgrade",
           "path": "/Windows%2098/Second%20Edition%20Upgrade%20CD/Microsoft%20Windows%2098%20Upgrade%20for%20Users%20of%20Windows%203.1%20and%2095%20%28X04-14318%29%28Microsoft%29%281999%29.iso"
         },
         {
-          "label": "98 Second Edition Full",
-          "path": "/Windows%2098/Second%20Edition%20X86%20Bootable/Windows%2098%20Second%20Edition%20Full%20Bootable%20CD.iso"
+          "label": "98 First Edition Upgrade",
+          "path": "/Windows%2098/First%20Edition%20Upgrade%20CD/Microsoft%20Windows%2098%20Upgrade%20%28X03-30205%29%20%281998%29.iso"
         },
         {
           "label": "Plus 98",
           "path": "/Windows%2098/Microsoft%20Plus%20for%20Windows%2098/PLUS98.ISO"
+        },
+        {
+          "label": "98 Second Edition Full",
+          "path": "/Windows%2098/Second%20Edition%20X86%20Bootable/Windows%2098%20Second%20Edition%20Full%20Bootable%20CD.iso"
         }
       ]
     },
@@ -944,12 +956,12 @@
       ],
       "releases": [
         {
-          "label": "Me Retail Upgrade",
-          "path": "/Windows%20ME/Windows%20Me%20%28Retail%20Upgrade%20Version%29/Windows%20Me%20%28Retail%20Upgrade%20Version%29.iso"
-        },
-        {
           "label": "Me OEM",
           "path": "/Windows%20ME/Windows%20Me%20OEM/Windows%20Me.iso"
+        },
+        {
+          "label": "Me Retail Upgrade",
+          "path": "/Windows%20ME/Windows%20Me%20%28Retail%20Upgrade%20Version%29/Windows%20Me%20%28Retail%20Upgrade%20Version%29.iso"
         }
       ]
     },
@@ -972,16 +984,16 @@
       ],
       "releases": [
         {
-          "label": "Server SP1",
-          "path": "/Windows%20NT%204.0/NT%204.0%20Server%20%284.00.1381.1%29%20SP1/en_winnt_4.0_svr.iso"
-        },
-        {
           "label": "Enterprise Server (Disc 1)",
           "path": "/Windows%20NT%204.0/NT%204.0%20Enterprise%20Server%20%284.00.1381.1%29/winnt40_x86en_entsrv.d1.iso"
         },
         {
           "label": "Enterprise Server (Disc 2)",
           "path": "/Windows%20NT%204.0/NT%204.0%20Enterprise%20Server%20%284.00.1381.1%29/winnt40_x86en_entsrv.d2.iso"
+        },
+        {
+          "label": "Server SP1",
+          "path": "/Windows%20NT%204.0/NT%204.0%20Server%20%284.00.1381.1%29%20SP1/en_winnt_4.0_svr.iso"
         },
         {
           "label": "Embedded (4.00.1381.204)",
@@ -1036,24 +1048,16 @@
       ],
       "releases": [
         {
-          "label": "Home RTM",
-          "path": "/Windows%20XP/Home%20Edition/RTM/WXHOEM_EN.iso"
-        },
-        {
-          "label": "Home SP3",
-          "path": "/Windows%20XP/Home%20Edition/SP3/en_windows_xp_home_with_service_pack_3_x86_cd_x14-92413.iso"
-        },
-        {
           "label": "Pro RTM",
           "path": "/Windows%20XP/PRO/RTM/WXPVOL_EN.iso"
         },
         {
-          "label": "Pro SP1",
-          "path": "/Windows%20XP/PRO/SP1/5.1.2600.1106.xpsp1.020828-1920_x86fre_client-professional_retail_en-us-X1APVOL_EN.iso"
-        },
-        {
           "label": "Pro SP1 (OEM)",
           "path": "/Windows%20XP/PRO/SP1/XRMPOEM_EN.iso"
+        },
+        {
+          "label": "Pro SP1",
+          "path": "/Windows%20XP/PRO/SP1/5.1.2600.1106.xpsp1.020828-1920_x86fre_client-professional_retail_en-us-X1APVOL_EN.iso"
         },
         {
           "label": "Pro SP2",
@@ -1068,12 +1072,24 @@
           "path": "/Windows%20XP/PRO/SP3/en_windows_xp_professional_with_service_pack_3_x86_cd_x14-80428.iso"
         },
         {
-          "label": "Pro x64",
-          "path": "/Windows%20XP/PRO%20X64/Windows_XP_Pro_x64_English.iso"
+          "label": "Home RTM",
+          "path": "/Windows%20XP/Home%20Edition/RTM/WXHOEM_EN.iso"
+        },
+        {
+          "label": "Home SP3",
+          "path": "/Windows%20XP/Home%20Edition/SP3/en_windows_xp_home_with_service_pack_3_x86_cd_x14-92413.iso"
         },
         {
           "label": "Media Center 2005 SP3",
           "path": "/Windows%20XP/Media%20Center%20Edition/MCE2005SP3.iso"
+        },
+        {
+          "label": "PRO X64",
+          "path": "/Windows%20XP/PRO%20X64/w2k3sp2_3959_usa_x64fre_spcd.iso"
+        },
+        {
+          "label": "Pro x64",
+          "path": "/Windows%20XP/PRO%20X64/Windows_XP_Pro_x64_English.iso"
         }
       ]
     },
@@ -1096,14 +1112,6 @@
       ],
       "releases": [
         {
-          "label": "RTM x64",
-          "path": "/Windows%20Vista/RTM/en_windows_vista_x64_dvd_x12-40712.iso"
-        },
-        {
-          "label": "RTM x86",
-          "path": "/Windows%20Vista/RTM/en_windows_vista_x86_dvd_x12-34293.iso"
-        },
-        {
           "label": "SP1 x64",
           "path": "/Windows%20Vista/SP1/en_windows_vista_with_service_pack_1_x64_dvd_x14-29595.iso"
         },
@@ -1118,6 +1126,14 @@
         {
           "label": "SP2 x86",
           "path": "/Windows%20Vista/SP2/en_windows_vista_sp2_x86_dvd_342266.iso"
+        },
+        {
+          "label": "RTM x64",
+          "path": "/Windows%20Vista/RTM/en_windows_vista_x64_dvd_x12-40712.iso"
+        },
+        {
+          "label": "RTM x86",
+          "path": "/Windows%20Vista/RTM/en_windows_vista_x86_dvd_x12-34293.iso"
         }
       ]
     },
@@ -1144,92 +1160,92 @@
       ],
       "releases": [
         {
-          "label": "Starter RTM x86",
-          "path": "/Windows%207/Starter/RTM/en_windows_7_starter_x86_dvd_x15-68956.iso"
-        },
-        {
-          "label": "Starter SP1 x86",
-          "path": "/Windows%207/Starter/SP1/en_windows_7_starter_with_sp1_x86_dvd_u_678562.iso"
-        },
-        {
-          "label": "Home Basic RTM x86",
-          "path": "/Windows%207/Home%20Basic/RTM/en_windows_7_home_basic_x86_dvd_x15-65654.iso"
-        },
-        {
-          "label": "Home Basic SP1 x86",
-          "path": "/Windows%207/Home%20Basic/SP1/en_windows_7_home_basic_with_sp1_x86_dvd_u_676470.iso"
-        },
-        {
-          "label": "Home Premium RTM x64",
-          "path": "/Windows%207/Home%20Premium/RTM/en_windows_7_home_premium_x64_dvd_x15-65733.iso"
-        },
-        {
-          "label": "Home Premium RTM x86",
-          "path": "/Windows%207/Home%20Premium/RTM/en_windows_7_home_premium_x86_dvd_x15-65732.iso"
-        },
-        {
-          "label": "Home Premium SP1 x64",
-          "path": "/Windows%207/Home%20Premium/SP1/en_windows_7_home_premium_with_sp1_x64_dvd_u_676549.iso"
-        },
-        {
-          "label": "Home Premium SP1 x86",
-          "path": "/Windows%207/Home%20Premium/SP1/en_windows_7_home_premium_with_sp1_x86_dvd_u_676701.iso"
-        },
-        {
-          "label": "Professional RTM x64",
-          "path": "/Windows%207/Professional/RTM/en_windows_7_professional_x64_dvd_x15-65805.iso"
-        },
-        {
-          "label": "Professional RTM x86",
-          "path": "/Windows%207/Professional/RTM/en_windows_7_professional_x86_dvd_x15-65804.iso"
-        },
-        {
-          "label": "Professional SP1 x64",
-          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_x64_dvd_u_676939.iso"
-        },
-        {
-          "label": "Professional SP1 x86",
-          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_x86_dvd_u_677056.iso"
-        },
-        {
-          "label": "Professional VL SP1 x64",
-          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_vl_build_x64_dvd_u_677791.iso"
-        },
-        {
-          "label": "Professional VL SP1 x86",
-          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_vl_build_x86_dvd_u_677896.iso"
-        },
-        {
-          "label": "Enterprise RTM x64",
-          "path": "/Windows%207/Enterprise/RTM/en_windows_7_enterprise_x64_dvd_x15-70749.iso"
-        },
-        {
-          "label": "Enterprise RTM x86",
-          "path": "/Windows%207/Enterprise/RTM/en_windows_7_enterprise_x86_dvd_x15-70745.iso"
-        },
-        {
-          "label": "Enterprise SP1 x64",
-          "path": "/Windows%207/Enterprise/SP1/en_windows_7_enterprise_with_sp1_x64_dvd_u_677651.iso"
-        },
-        {
-          "label": "Enterprise SP1 x86",
-          "path": "/Windows%207/Enterprise/SP1/en_windows_7_enterprise_with_sp1_x86_dvd_u_677710.iso"
-        },
-        {
-          "label": "Ultimate RTM x64",
-          "path": "/Windows%207/RTM/en_windows_7_ultimate_x64_dvd_x15-65922.iso"
-        },
-        {
-          "label": "Ultimate RTM x86",
-          "path": "/Windows%207/RTM/en_windows_7_ultimate_x86_dvd_x15-65921.iso"
+          "label": "Ultimate SP1 x86",
+          "path": "/Windows%207/SP1/Win7_Ult_SP1_English_x32.iso"
         },
         {
           "label": "Ultimate SP1 x64",
           "path": "/Windows%207/SP1/Win7_Ult_SP1_English_x64.iso"
         },
         {
-          "label": "Ultimate SP1 x86",
-          "path": "/Windows%207/SP1/Win7_Ult_SP1_English_x32.iso"
+          "label": "Professional SP1 x64",
+          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_x64_dvd_u_676939.iso"
+        },
+        {
+          "label": "Enterprise SP1 x64",
+          "path": "/Windows%207/Enterprise/SP1/en_windows_7_enterprise_with_sp1_x64_dvd_u_677651.iso"
+        },
+        {
+          "label": "Professional VL SP1 x64",
+          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_vl_build_x64_dvd_u_677791.iso"
+        },
+        {
+          "label": "Professional SP1 x86",
+          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_x86_dvd_u_677056.iso"
+        },
+        {
+          "label": "Enterprise SP1 x86",
+          "path": "/Windows%207/Enterprise/SP1/en_windows_7_enterprise_with_sp1_x86_dvd_u_677710.iso"
+        },
+        {
+          "label": "Professional VL SP1 x86",
+          "path": "/Windows%207/Professional/SP1/en_windows_7_professional_with_sp1_vl_build_x86_dvd_u_677896.iso"
+        },
+        {
+          "label": "Starter SP1 x86",
+          "path": "/Windows%207/Starter/SP1/en_windows_7_starter_with_sp1_x86_dvd_u_678562.iso"
+        },
+        {
+          "label": "Professional RTM x64",
+          "path": "/Windows%207/Professional/RTM/en_windows_7_professional_x64_dvd_x15-65805.iso"
+        },
+        {
+          "label": "Ultimate RTM x64",
+          "path": "/Windows%207/RTM/en_windows_7_ultimate_x64_dvd_x15-65922.iso"
+        },
+        {
+          "label": "Enterprise RTM x64",
+          "path": "/Windows%207/Enterprise/RTM/en_windows_7_enterprise_x64_dvd_x15-70749.iso"
+        },
+        {
+          "label": "Professional RTM x86",
+          "path": "/Windows%207/Professional/RTM/en_windows_7_professional_x86_dvd_x15-65804.iso"
+        },
+        {
+          "label": "Ultimate RTM x86",
+          "path": "/Windows%207/RTM/en_windows_7_ultimate_x86_dvd_x15-65921.iso"
+        },
+        {
+          "label": "Starter RTM x86",
+          "path": "/Windows%207/Starter/RTM/en_windows_7_starter_x86_dvd_x15-68956.iso"
+        },
+        {
+          "label": "Enterprise RTM x86",
+          "path": "/Windows%207/Enterprise/RTM/en_windows_7_enterprise_x86_dvd_x15-70745.iso"
+        },
+        {
+          "label": "Home Premium SP1 x64",
+          "path": "/Windows%207/Home%20Premium/SP1/en_windows_7_home_premium_with_sp1_x64_dvd_u_676549.iso"
+        },
+        {
+          "label": "Home Basic SP1 x86",
+          "path": "/Windows%207/Home%20Basic/SP1/en_windows_7_home_basic_with_sp1_x86_dvd_u_676470.iso"
+        },
+        {
+          "label": "Home Premium SP1 x86",
+          "path": "/Windows%207/Home%20Premium/SP1/en_windows_7_home_premium_with_sp1_x86_dvd_u_676701.iso"
+        },
+        {
+          "label": "Home Premium RTM x64",
+          "path": "/Windows%207/Home%20Premium/RTM/en_windows_7_home_premium_x64_dvd_x15-65733.iso"
+        },
+        {
+          "label": "Home Basic RTM x86",
+          "path": "/Windows%207/Home%20Basic/RTM/en_windows_7_home_basic_x86_dvd_x15-65654.iso"
+        },
+        {
+          "label": "Home Premium RTM x86",
+          "path": "/Windows%207/Home%20Premium/RTM/en_windows_7_home_premium_x86_dvd_x15-65732.iso"
         }
       ]
     },
@@ -1252,14 +1268,6 @@
       ],
       "releases": [
         {
-          "label": "8 Pro x64",
-          "path": "/Windows%208/Windows%208%20Pro%2064-Bit.iso"
-        },
-        {
-          "label": "8 Pro x86",
-          "path": "/Windows%208/Windows%208%20Pro%2032-Bit.iso"
-        },
-        {
           "label": "8.1 RTM x64",
           "path": "/Windows%208.1/RTM/en_windows_8_1_x64_dvd_2707217.iso"
         },
@@ -1268,12 +1276,20 @@
           "path": "/Windows%208.1/RTM/en_windows_8_1_x86_dvd_2707392.iso"
         },
         {
+          "label": "8.1 Update 1 x86",
+          "path": "/Windows%208.1/Update%201/Win8.1_English_x32.iso"
+        },
+        {
           "label": "8.1 Update 1 x64",
           "path": "/Windows%208.1/Update%201/Win8.1_English_x64.iso"
         },
         {
-          "label": "8.1 Update 1 x86",
-          "path": "/Windows%208.1/Update%201/Win8.1_English_x32.iso"
+          "label": "8 Pro x86",
+          "path": "/Windows%208/Windows%208%20Pro%2032-Bit.iso"
+        },
+        {
+          "label": "8 Pro x64",
+          "path": "/Windows%208/Windows%208%20Pro%2064-Bit.iso"
         }
       ]
     },
@@ -1296,116 +1312,116 @@
       ],
       "releases": [
         {
-          "label": "1507 RTM x64",
-          "path": "/Windows%2010/1507%20Threshold%201%20RTM/Win10_English_x64.iso"
-        },
-        {
-          "label": "1507 RTM x86",
-          "path": "/Windows%2010/1507%20Threshold%201%20RTM/Win10_English_x32.iso"
-        },
-        {
-          "label": "1511 x64",
-          "path": "/Windows%2010/1511%20Threshold%202/Win10_1511_English_x64.iso"
-        },
-        {
-          "label": "1511 x86",
-          "path": "/Windows%2010/1511%20Threshold%202/Win10_1511_English_x32.iso"
-        },
-        {
-          "label": "1607 x64",
-          "path": "/Windows%2010/1607%20Redstone%201/Win10_1607_English_x64.iso"
-        },
-        {
-          "label": "1607 x86",
-          "path": "/Windows%2010/1607%20Redstone%201/Win10_1607_English_x32.iso"
-        },
-        {
-          "label": "1703 x64",
-          "path": "/Windows%2010/1703%20Redstone%202/Win10_1703_English_x64.iso"
-        },
-        {
-          "label": "1703 x86",
-          "path": "/Windows%2010/1703%20Redstone%202/Win10_1703_English_x32.iso"
-        },
-        {
-          "label": "1709 x64",
-          "path": "/Windows%2010/1709%20Redstone%203/Win10_1709_English_x64.iso"
-        },
-        {
-          "label": "1709 x86",
-          "path": "/Windows%2010/1709%20Redstone%203/Win10_1709_English_x32.iso"
-        },
-        {
-          "label": "1803 x64",
-          "path": "/Windows%2010/1803%20Redstone%204/Win10_1803_English_x64.iso"
-        },
-        {
-          "label": "1803 x86",
-          "path": "/Windows%2010/1803%20Redstone%204/Win10_1803_English_x32.iso"
-        },
-        {
-          "label": "1809 x64",
-          "path": "/Windows%2010/1809%20Redstone%205/Win10_1809_English_x64.iso"
-        },
-        {
-          "label": "1809 x86",
-          "path": "/Windows%2010/1809%20Redstone%205/Win10_1809_English_x32.iso"
-        },
-        {
-          "label": "1903 x64",
-          "path": "/Windows%2010/1903%2019H1/Win10_1903_V1_English_x64.iso"
-        },
-        {
-          "label": "1903 x86",
-          "path": "/Windows%2010/1903%2019H1/Win10_1903_V1_English_x32.iso"
-        },
-        {
-          "label": "1909 x64",
-          "path": "/Windows%2010/1909%2019H2/Win10_1909_English_x64.iso"
-        },
-        {
-          "label": "1909 x86",
-          "path": "/Windows%2010/1909%2019H2/Win10_1909_English_x32.iso"
-        },
-        {
-          "label": "2004 x64",
-          "path": "/Windows%2010/2004%2020H1/Win10_2004_English_x64.iso"
-        },
-        {
-          "label": "2004 x86",
-          "path": "/Windows%2010/2004%2020H1/Win10_2004_English_x32.iso"
+          "label": "20H2 x86",
+          "path": "/Windows%2010/20H2/Win10_20H2_English_x32.iso"
         },
         {
           "label": "20H2 x64",
           "path": "/Windows%2010/20H2/Win10_20H2_English_x64.iso"
         },
         {
-          "label": "20H2 x86",
-          "path": "/Windows%2010/20H2/Win10_20H2_English_x32.iso"
+          "label": "21H1 x86",
+          "path": "/Windows%2010/21H1/Win10_21H1_English_x32.iso"
         },
         {
           "label": "21H1 x64",
           "path": "/Windows%2010/21H1/Win10_21H1_English_x64.iso"
         },
         {
-          "label": "21H1 x86",
-          "path": "/Windows%2010/21H1/Win10_21H1_English_x32.iso"
+          "label": "21H2 x86",
+          "path": "/Windows%2010/21H2/Win10_21H2_English_x32.iso"
         },
         {
           "label": "21H2 x64",
           "path": "/Windows%2010/21H2/Win10_21H2_English_x64.iso"
         },
         {
-          "label": "21H2 x86",
-          "path": "/Windows%2010/21H2/Win10_21H2_English_x32.iso"
+          "label": "22H2 x86",
+          "path": "/Windows%2010/22H2/Win10_22H2_English_x32.iso"
         },
         {
           "label": "22H2 x64",
           "path": "/Windows%2010/22H2/Win10_22H2_English_x64.iso"
         },
         {
-          "label": "22H2 x86",
-          "path": "/Windows%2010/22H2/Win10_22H2_English_x32.iso"
+          "label": "1507 RTM x86",
+          "path": "/Windows%2010/1507%20Threshold%201%20RTM/Win10_English_x32.iso"
+        },
+        {
+          "label": "1507 RTM x64",
+          "path": "/Windows%2010/1507%20Threshold%201%20RTM/Win10_English_x64.iso"
+        },
+        {
+          "label": "1511 x86",
+          "path": "/Windows%2010/1511%20Threshold%202/Win10_1511_English_x32.iso"
+        },
+        {
+          "label": "1511 x64",
+          "path": "/Windows%2010/1511%20Threshold%202/Win10_1511_English_x64.iso"
+        },
+        {
+          "label": "1607 x86",
+          "path": "/Windows%2010/1607%20Redstone%201/Win10_1607_English_x32.iso"
+        },
+        {
+          "label": "1607 x64",
+          "path": "/Windows%2010/1607%20Redstone%201/Win10_1607_English_x64.iso"
+        },
+        {
+          "label": "1703 x86",
+          "path": "/Windows%2010/1703%20Redstone%202/Win10_1703_English_x32.iso"
+        },
+        {
+          "label": "1703 x64",
+          "path": "/Windows%2010/1703%20Redstone%202/Win10_1703_English_x64.iso"
+        },
+        {
+          "label": "1709 x86",
+          "path": "/Windows%2010/1709%20Redstone%203/Win10_1709_English_x32.iso"
+        },
+        {
+          "label": "1709 x64",
+          "path": "/Windows%2010/1709%20Redstone%203/Win10_1709_English_x64.iso"
+        },
+        {
+          "label": "1803 x86",
+          "path": "/Windows%2010/1803%20Redstone%204/Win10_1803_English_x32.iso"
+        },
+        {
+          "label": "1803 x64",
+          "path": "/Windows%2010/1803%20Redstone%204/Win10_1803_English_x64.iso"
+        },
+        {
+          "label": "1809 x86",
+          "path": "/Windows%2010/1809%20Redstone%205/Win10_1809_English_x32.iso"
+        },
+        {
+          "label": "1809 x64",
+          "path": "/Windows%2010/1809%20Redstone%205/Win10_1809_English_x64.iso"
+        },
+        {
+          "label": "1903 x86",
+          "path": "/Windows%2010/1903%2019H1/Win10_1903_V1_English_x32.iso"
+        },
+        {
+          "label": "1903 x64",
+          "path": "/Windows%2010/1903%2019H1/Win10_1903_V1_English_x64.iso"
+        },
+        {
+          "label": "1909 x86",
+          "path": "/Windows%2010/1909%2019H2/Win10_1909_English_x32.iso"
+        },
+        {
+          "label": "1909 x64",
+          "path": "/Windows%2010/1909%2019H2/Win10_1909_English_x64.iso"
+        },
+        {
+          "label": "2004 x86",
+          "path": "/Windows%2010/2004%2020H1/Win10_2004_English_x32.iso"
+        },
+        {
+          "label": "2004 x64",
+          "path": "/Windows%2010/2004%2020H1/Win10_2004_English_x64.iso"
         }
       ]
     },
@@ -1534,6 +1550,30 @@
         {
           "label": "2022 Eval",
           "path": "/Windows%20Server/Windows%20Server%202022/SERVER_EVAL_x64FRE_en-us.iso"
+        }
+      ]
+    },
+    {
+      "id": "winneptune-archive",
+      "display_name": "Windows Neptune (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "Windows Neptune Build 5111.iso",
+          "path": "/Windows%20Neptune%20Build%205111/Windows%20Neptune%20Build%205111.iso"
         }
       ]
     }
