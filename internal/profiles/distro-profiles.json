@@ -848,6 +848,618 @@
       "default_boot_params": "initrd=initrd archisobasedir=sysresccd archiso_http_srv={{BASE_URL}}/boot/{{CACHE_DIR}}/iso/ checksum ip=dhcp",
       "auto_install_type": "",
       "boot_method": "kernel"
+    },
+    {
+      "id": "win95-archive",
+      "display_name": "Windows 95 (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "95 OEM RTM (4.00.950)",
+          "path": "/Windows%2095/Microsoft%20Windows%2095%20%28OEM%29%204.00.950%20%28RTM%29/Microsoft%20Windows%2095%20%28OEM%29%20%28RTM%29.iso"
+        },
+        {
+          "label": "95A OSR1 (4.00.950a)",
+          "path": "/Windows%2095/Microsoft%20Windows%2095A%20%284.00.950%20OSR1%29%20%281-16-1996%29%20%28OEM%29/win95_a_oem.iso"
+        },
+        {
+          "label": "95B OSR2 (4.00.1111)",
+          "path": "/Windows%2095/Microsoft%20Windows%2095B%20%284.00.1111%29%20%28OSR2%29/windows95b.iso"
+        },
+        {
+          "label": "95B OSR2.1 (4.10.1111)",
+          "path": "/Windows%2095/Microsoft%20Windows%2095B%20%284.10.1111%29%20%28OSR2.1%29/win95_full_ar.osr2_en.iso"
+        },
+        {
+          "label": "95C OSR2.5 (4.03.1216)",
+          "path": "/Windows%2095/Microsoft%20Windows%2095C%20%284.03.1216%29%20%28OSR2.5%29%20%281997-11-26%29/Win95_OSR25.iso"
+        }
+      ]
+    },
+    {
+      "id": "win98-archive",
+      "display_name": "Windows 98 (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "98 First Edition Upgrade",
+          "path": "/Windows%2098/First%20Edition%20Upgrade%20CD/Microsoft%20Windows%2098%20Upgrade%20%28X03-30205%29%20%281998%29.iso"
+        },
+        {
+          "label": "98 Second Edition Upgrade",
+          "path": "/Windows%2098/Second%20Edition%20Upgrade%20CD/Microsoft%20Windows%2098%20Upgrade%20for%20Users%20of%20Windows%203.1%20and%2095%20%28X04-14318%29%28Microsoft%29%281999%29.iso"
+        },
+        {
+          "label": "98 Second Edition Full",
+          "path": "/Windows%2098/Second%20Edition%20X86%20Bootable/Windows%2098%20Second%20Edition%20Full%20Bootable%20CD.iso"
+        },
+        {
+          "label": "Plus 98",
+          "path": "/Windows%2098/Microsoft%20Plus%20for%20Windows%2098/PLUS98.ISO"
+        }
+      ]
+    },
+    {
+      "id": "winme-archive",
+      "display_name": "Windows Me (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "Me Retail Upgrade",
+          "path": "/Windows%20ME/Windows%20Me%20%28Retail%20Upgrade%20Version%29/Windows%20Me%20%28Retail%20Upgrade%20Version%29.iso"
+        },
+        {
+          "label": "Me OEM",
+          "path": "/Windows%20ME/Windows%20Me%20OEM/Windows%20Me.iso"
+        }
+      ]
+    },
+    {
+      "id": "winnt4-archive",
+      "display_name": "Windows NT 4.0 (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "Server SP1",
+          "path": "/Windows%20NT%204.0/NT%204.0%20Server%20%284.00.1381.1%29%20SP1/en_winnt_4.0_svr.iso"
+        },
+        {
+          "label": "Enterprise Server (Disc 1)",
+          "path": "/Windows%20NT%204.0/NT%204.0%20Enterprise%20Server%20%284.00.1381.1%29/winnt40_x86en_entsrv.d1.iso"
+        },
+        {
+          "label": "Enterprise Server (Disc 2)",
+          "path": "/Windows%20NT%204.0/NT%204.0%20Enterprise%20Server%20%284.00.1381.1%29/winnt40_x86en_entsrv.d2.iso"
+        },
+        {
+          "label": "Embedded (4.00.1381.204)",
+          "path": "/Windows%20NT%204.0/NT%204.0%20Embedded%20%284.00.1381.204%29/winnt40.1381.embedded.x86.iso"
+        }
+      ]
+    },
+    {
+      "id": "win2k-archive",
+      "display_name": "Windows 2000 (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "Professional RTM",
+          "path": "/Windows%202000/RTM/W2PIS_EN.iso"
+        },
+        {
+          "label": "Professional SP4",
+          "path": "/Windows%202000/SP4/EN_WIN2000_PRO_SP4.ISO"
+        }
+      ]
+    },
+    {
+      "id": "winxp-archive",
+      "display_name": "Windows XP (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "Home RTM",
+          "path": "/Windows%20XP/Home%20Edition/RTM/WXHOEM_EN.iso"
+        },
+        {
+          "label": "Home SP3",
+          "path": "/Windows%20XP/Home%20Edition/SP3/en_windows_xp_home_with_service_pack_3_x86_cd_x14-92413.iso"
+        },
+        {
+          "label": "Pro RTM",
+          "path": "/Windows%20XP/PRO/RTM/WXPVOL_EN.iso"
+        },
+        {
+          "label": "Pro SP1",
+          "path": "/Windows%20XP/PRO/SP1/5.1.2600.1106.xpsp1.020828-1920_x86fre_client-professional_retail_en-us-X1APVOL_EN.iso"
+        },
+        {
+          "label": "Pro SP1 (OEM)",
+          "path": "/Windows%20XP/PRO/SP1/XRMPOEM_EN.iso"
+        },
+        {
+          "label": "Pro SP2",
+          "path": "/Windows%20XP/PRO/SP2/VRMPFPP_EN.ISO"
+        },
+        {
+          "label": "Pro SP2 (OEM)",
+          "path": "/Windows%20XP/PRO/SP2/VX2POEM_EN.ISO"
+        },
+        {
+          "label": "Pro SP3",
+          "path": "/Windows%20XP/PRO/SP3/en_windows_xp_professional_with_service_pack_3_x86_cd_x14-80428.iso"
+        },
+        {
+          "label": "Pro x64",
+          "path": "/Windows%20XP/PRO%20X64/Windows_XP_Pro_x64_English.iso"
+        },
+        {
+          "label": "Media Center 2005 SP3",
+          "path": "/Windows%20XP/Media%20Center%20Edition/MCE2005SP3.iso"
+        }
+      ]
+    },
+    {
+      "id": "winvista-archive",
+      "display_name": "Windows Vista (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "RTM x64",
+          "path": "/Windows%20Vista/RTM/en_windows_vista_x64_dvd_x12-40712.iso"
+        },
+        {
+          "label": "RTM x86",
+          "path": "/Windows%20Vista/RTM/en_windows_vista_x86_dvd_x12-34293.iso"
+        },
+        {
+          "label": "SP1 x64",
+          "path": "/Windows%20Vista/SP1/en_windows_vista_with_service_pack_1_x64_dvd_x14-29595.iso"
+        },
+        {
+          "label": "SP1 x86",
+          "path": "/Windows%20Vista/SP1/en_windows_vista_with_service_pack_1_x86_dvd_x14-29594.iso"
+        },
+        {
+          "label": "SP2 x64",
+          "path": "/Windows%20Vista/SP2/en_windows_vista_sp2_x64_dvd_342267.iso"
+        },
+        {
+          "label": "SP2 x86",
+          "path": "/Windows%20Vista/SP2/en_windows_vista_sp2_x86_dvd_342266.iso"
+        }
+      ]
+    },
+    {
+      "id": "win7-archive",
+      "display_name": "Windows 7 (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "Ultimate RTM x64",
+          "path": "/Windows%207/RTM/en_windows_7_ultimate_x64_dvd_x15-65922.iso"
+        },
+        {
+          "label": "Ultimate RTM x86",
+          "path": "/Windows%207/RTM/en_windows_7_ultimate_x86_dvd_x15-65921.iso"
+        },
+        {
+          "label": "Ultimate SP1 x64",
+          "path": "/Windows%207/SP1/Win7_Ult_SP1_English_x64.iso"
+        },
+        {
+          "label": "Ultimate SP1 x86",
+          "path": "/Windows%207/SP1/Win7_Ult_SP1_English_x32.iso"
+        }
+      ]
+    },
+    {
+      "id": "win8-archive",
+      "display_name": "Windows 8 / 8.1 (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "8 Pro x64",
+          "path": "/Windows%208/Windows%208%20Pro%2064-Bit.iso"
+        },
+        {
+          "label": "8 Pro x86",
+          "path": "/Windows%208/Windows%208%20Pro%2032-Bit.iso"
+        },
+        {
+          "label": "8.1 RTM x64",
+          "path": "/Windows%208.1/RTM/en_windows_8_1_x64_dvd_2707217.iso"
+        },
+        {
+          "label": "8.1 RTM x86",
+          "path": "/Windows%208.1/RTM/en_windows_8_1_x86_dvd_2707392.iso"
+        },
+        {
+          "label": "8.1 Update 1 x64",
+          "path": "/Windows%208.1/Update%201/Win8.1_English_x64.iso"
+        },
+        {
+          "label": "8.1 Update 1 x86",
+          "path": "/Windows%208.1/Update%201/Win8.1_English_x32.iso"
+        }
+      ]
+    },
+    {
+      "id": "win10-archive",
+      "display_name": "Windows 10 (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "1507 RTM x64",
+          "path": "/Windows%2010/1507%20Threshold%201%20RTM/Win10_English_x64.iso"
+        },
+        {
+          "label": "1507 RTM x86",
+          "path": "/Windows%2010/1507%20Threshold%201%20RTM/Win10_English_x32.iso"
+        },
+        {
+          "label": "1511 x64",
+          "path": "/Windows%2010/1511%20Threshold%202/Win10_1511_English_x64.iso"
+        },
+        {
+          "label": "1511 x86",
+          "path": "/Windows%2010/1511%20Threshold%202/Win10_1511_English_x32.iso"
+        },
+        {
+          "label": "1607 x64",
+          "path": "/Windows%2010/1607%20Redstone%201/Win10_1607_English_x64.iso"
+        },
+        {
+          "label": "1607 x86",
+          "path": "/Windows%2010/1607%20Redstone%201/Win10_1607_English_x32.iso"
+        },
+        {
+          "label": "1703 x64",
+          "path": "/Windows%2010/1703%20Redstone%202/Win10_1703_English_x64.iso"
+        },
+        {
+          "label": "1703 x86",
+          "path": "/Windows%2010/1703%20Redstone%202/Win10_1703_English_x32.iso"
+        },
+        {
+          "label": "1709 x64",
+          "path": "/Windows%2010/1709%20Redstone%203/Win10_1709_English_x64.iso"
+        },
+        {
+          "label": "1709 x86",
+          "path": "/Windows%2010/1709%20Redstone%203/Win10_1709_English_x32.iso"
+        },
+        {
+          "label": "1803 x64",
+          "path": "/Windows%2010/1803%20Redstone%204/Win10_1803_English_x64.iso"
+        },
+        {
+          "label": "1803 x86",
+          "path": "/Windows%2010/1803%20Redstone%204/Win10_1803_English_x32.iso"
+        },
+        {
+          "label": "1809 x64",
+          "path": "/Windows%2010/1809%20Redstone%205/Win10_1809_English_x64.iso"
+        },
+        {
+          "label": "1809 x86",
+          "path": "/Windows%2010/1809%20Redstone%205/Win10_1809_English_x32.iso"
+        },
+        {
+          "label": "1903 x64",
+          "path": "/Windows%2010/1903%2019H1/Win10_1903_V1_English_x64.iso"
+        },
+        {
+          "label": "1903 x86",
+          "path": "/Windows%2010/1903%2019H1/Win10_1903_V1_English_x32.iso"
+        },
+        {
+          "label": "1909 x64",
+          "path": "/Windows%2010/1909%2019H2/Win10_1909_English_x64.iso"
+        },
+        {
+          "label": "1909 x86",
+          "path": "/Windows%2010/1909%2019H2/Win10_1909_English_x32.iso"
+        },
+        {
+          "label": "2004 x64",
+          "path": "/Windows%2010/2004%2020H1/Win10_2004_English_x64.iso"
+        },
+        {
+          "label": "2004 x86",
+          "path": "/Windows%2010/2004%2020H1/Win10_2004_English_x32.iso"
+        },
+        {
+          "label": "20H2 x64",
+          "path": "/Windows%2010/20H2/Win10_20H2_English_x64.iso"
+        },
+        {
+          "label": "20H2 x86",
+          "path": "/Windows%2010/20H2/Win10_20H2_English_x32.iso"
+        },
+        {
+          "label": "21H1 x64",
+          "path": "/Windows%2010/21H1/Win10_21H1_English_x64.iso"
+        },
+        {
+          "label": "21H1 x86",
+          "path": "/Windows%2010/21H1/Win10_21H1_English_x32.iso"
+        },
+        {
+          "label": "21H2 x64",
+          "path": "/Windows%2010/21H2/Win10_21H2_English_x64.iso"
+        },
+        {
+          "label": "21H2 x86",
+          "path": "/Windows%2010/21H2/Win10_21H2_English_x32.iso"
+        },
+        {
+          "label": "22H2 x64",
+          "path": "/Windows%2010/22H2/Win10_22H2_English_x64.iso"
+        },
+        {
+          "label": "22H2 x86",
+          "path": "/Windows%2010/22H2/Win10_22H2_English_x32.iso"
+        }
+      ]
+    },
+    {
+      "id": "win11-archive",
+      "display_name": "Windows 11 (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "RTM x64",
+          "path": "/Windows%2011/RTM/Win11_English_x64.iso"
+        },
+        {
+          "label": "22H2 x64",
+          "path": "/Windows%2011/22H2/Win11_22H2_English_x64.iso"
+        },
+        {
+          "label": "23H2 x64",
+          "path": "/Windows%2011/23H2/Win11_23H2_English_x64.iso"
+        }
+      ]
+    },
+    {
+      "id": "winserver-legacy-archive",
+      "display_name": "Windows Server 2000-2008 (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "2000 DTC Server",
+          "path": "/Windows%20Server/Windows%20Server%202000/5.00.2195.6717_x86fre_DTCServer_en-us.iso"
+        },
+        {
+          "label": "2000 Advanced Server SP4",
+          "path": "/Windows%20Server/Windows%20Server%202000/Windows%202000%20Advanced%20Server%20SP4.iso"
+        },
+        {
+          "label": "2003 R2 Enterprise SP2 (CD 1)",
+          "path": "/Windows%20Server/Windows%20Server%202003/en_win_srv_2003_r2_enterprise_with_sp2_cd1_.iso"
+        },
+        {
+          "label": "2003 R2 Enterprise SP2 (CD 2)",
+          "path": "/Windows%20Server/Windows%20Server%202003/en_win_srv_2003_r2_enterprise_with_sp2_cd2_.iso"
+        },
+        {
+          "label": "2008 SP2 x64",
+          "path": "/Windows%20Server/Windows%20Server%202008/en_windows_server_2008_with_sp2_x64_dvd_342336.iso"
+        },
+        {
+          "label": "2008 SP2 x86",
+          "path": "/Windows%20Server/Windows%20Server%202008/en_windows_server_2008_with_sp2_x86_dvd_342333.iso"
+        },
+        {
+          "label": "2008 R2 Standard/Enterprise/Datacenter",
+          "path": "/Windows%20Server/Windows%20Server%202008%20R2/7601.17514.101119-1850_x64fre_server_en-us_VL-GRMSXVOL_EN_DVD.iso"
+        }
+      ]
+    },
+    {
+      "id": "winserver-modern-archive",
+      "display_name": "Windows Server 2012+ (Internet Archive)",
+      "family": "windows-archive",
+      "filename_patterns": [],
+      "kernel_paths": [],
+      "initrd_paths": [],
+      "squashfs_paths": [],
+      "default_boot_params": "",
+      "auto_install_type": "",
+      "boot_method": "",
+      "mirrors": [
+        {
+          "region": "Internet Archive",
+          "base": "https://archive.org/download/english_windows_collection"
+        }
+      ],
+      "releases": [
+        {
+          "label": "2012 Standard/Datacenter",
+          "path": "/Windows%20Server/Windows%20Server%202012/9200.16384.WIN8_RTM.120725-1247_X64FRE_SERVER_EVAL_EN-US-HRM_SSS_X64FREE_EN-US_DV5.ISO"
+        },
+        {
+          "label": "2012 Essentials",
+          "path": "/Windows%20Server/Windows%20Server%202012/en_server_install_disc_windows_server_2012_essentials_x64_dvd_1022281.iso"
+        },
+        {
+          "label": "2012 (full)",
+          "path": "/Windows%20Server/Windows%20Server%202012/en_windows_server_2012_x64_dvd_915478.iso"
+        },
+        {
+          "label": "2012 R2 Eval",
+          "path": "/Windows%20Server/Windows%20Server%202012%20R2/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO"
+        },
+        {
+          "label": "2016 Datacenter Eval",
+          "path": "/Windows%20Server/Windows%20Server%202016/Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO"
+        },
+        {
+          "label": "2019 Eval",
+          "path": "/Windows%20Server/Windows%20Server%202019/17763.737.190906-2324.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us_1.iso"
+        },
+        {
+          "label": "2022 Eval",
+          "path": "/Windows%20Server/Windows%20Server%202022/SERVER_EVAL_x64FRE_en-us.iso"
+        }
+      ]
     }
   ]
 }

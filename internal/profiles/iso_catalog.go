@@ -13,6 +13,7 @@ type ISOCatalog struct {
 type ISOEntry struct {
 	ID       string       `json:"id"`
 	Name     string       `json:"name"`
+	Family   string       `json:"family"`
 	Mirrors  []ISOMirror  `json:"mirrors"`
 	Releases []ISORelease `json:"releases"`
 }
@@ -45,6 +46,7 @@ func LoadISOCatalog() (*ISOCatalog, error) {
 		distros = append(distros, ISOEntry{
 			ID:       p.ID,
 			Name:     p.DisplayName,
+			Family:   p.Family,
 			Mirrors:  p.Mirrors,
 			Releases: p.Releases,
 		})
