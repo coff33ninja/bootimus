@@ -84,6 +84,16 @@ def natural_key(v):
     return tuple(int(p) for p in parts) if parts else (0,)
 
 
+def _bump_version(ver):
+    """Increment patch version (0.1.68 -> 0.1.69)."""
+    parts = ver.split(".")
+    if len(parts) >= 3:
+        parts[-1] = str(int(parts[-1]) + 1)
+    else:
+        parts.append("1")
+    return ".".join(parts)
+
+
 def save_json(path, data):
     if DRY_RUN:
         return
@@ -102,9 +112,13 @@ def update_json_files(sources, updater):
             data = json.load(f)
         changed = updater(data)
         if changed:
+            # Bump version on changes
+            old_ver = data.get("version", "0.0.0")
+            new_ver = _bump_version(old_ver)
+            data["version"] = new_ver
             save_json(root_path, data)
             save_json(embed_path, data)
-            print(f"  Updated: {root_path.name}")
+            print(f"  Updated: {root_path.name} ({old_ver} -> {new_ver})")
             any_changed = True
             changed_files.append(str(root_path))
     return any_changed
