@@ -4251,13 +4251,19 @@ function renderGetISORow(r, distro) {
     </div>`;
 }
 
+function isWindowsDistro(distro) {
+    if (!distro) return false;
+    const name = (distro.name || distro.id || '').toLowerCase();
+    return name.includes('windows');
+}
+
 function renderGetImagesList(filter) {
     const container = document.getElementById('get-images-list');
     if (!container) return;
     const q = (filter || '').trim().toLowerCase();
     let html = '';
     for (const distro of (isoCatalog.distros || [])) {
-        if (distro.family === 'windows-archive') continue;
+        if (isWindowsDistro(distro)) continue;
         const matching = (distro.releases || []).filter(r =>
             !q || distro.name.toLowerCase().includes(q) || r.label.toLowerCase().includes(q) || distro.id.toLowerCase().includes(q)
         );
@@ -4296,7 +4302,7 @@ function renderWindowsCatalog(filter) {
     const q = (filter || '').trim().toLowerCase();
     let html = '';
 
-    const windowsDistros = (isoCatalog && isoCatalog.distros || []).filter(d => d.family === 'windows-archive');
+    const windowsDistros = (isoCatalog && isoCatalog.distros || []).filter(d => isWindowsDistro(d));
 
     for (const distro of windowsDistros) {
         const matching = (distro.releases || []).filter(r =>
