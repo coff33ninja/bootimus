@@ -1,5 +1,5 @@
 {
-  "version": "0.1.69",
+  "version": "0.1.70",
   "tools": [
     {
       "name": "gparted",
@@ -51,8 +51,8 @@
       "name": "shredos",
       "display_name": "ShredOS",
       "description": "Secure disk wiping based on nwipe",
-      "version": "2025.11_29_x86-64_0.40",
-      "download_url": "https://github.com/PartialVolume/shredos.x86_64/releases/download/v2025.11_29_x86-64_0.40/shredos-2025.11_29_x86-64_0.40.img",
+      "version": "2025.11_30_x86-64_0.41",
+      "download_url": "https://github.com/PartialVolume/shredos.x86_64/releases/download/v2025.11_30_x86-64_0.41/shredos-2025.11_30_x86-64_0.41.img",
       "kernel_path": "shredos.img",
       "initrd_path": "",
       "boot_params": "",
