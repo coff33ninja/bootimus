@@ -1,5 +1,5 @@
 {
-  "version": "0.1.69",
+  "version": "0.1.70",
   "profiles": [
     {
       "id": "ubuntu",
@@ -48,20 +48,20 @@
       ],
       "releases": [
         {
-          "label": "24.04 LTS Desktop (amd64)",
-          "path": "/24.04.4/ubuntu-24.04.4-desktop-amd64.iso"
+          "label": "26.04.1 LTS Desktop (amd64)",
+          "path": "/26.04.1/ubuntu-26.04.1-desktop-amd64.iso"
         },
         {
-          "label": "24.04 LTS Server (amd64)",
-          "path": "/24.04.4/ubuntu-24.04.4-live-server-amd64.iso"
+          "label": "26.04.1 LTS Server (amd64)",
+          "path": "/26.04.1/ubuntu-26.04.1-live-server-amd64.iso"
         },
         {
-          "label": "26.04 LTS Desktop (amd64)",
-          "path": "/26.04/ubuntu-26.04-desktop-amd64.iso"
+          "label": "26.10 Desktop (amd64)",
+          "path": "/26.10/ubuntu-26.10-desktop-amd64.iso"
         },
         {
-          "label": "26.04 LTS Server (amd64)",
-          "path": "/26.04/ubuntu-26.04-live-server-amd64.iso"
+          "label": "26.10 Server (amd64)",
+          "path": "/26.10/ubuntu-26.10-live-server-amd64.iso"
         }
       ]
     },
@@ -241,12 +241,12 @@
       ],
       "releases": [
         {
-          "label": "13 (Trixie) DVD-1 (amd64)",
-          "path": "/iso-dvd/debian-13.5.0-amd64-DVD-1.iso"
+          "label": "13.7.0 (Trixie) DVD-1 (amd64)",
+          "path": "/iso-dvd/debian-13.7.0-amd64-DVD-1.iso"
         },
         {
-          "label": "13 (Trixie) Netinst (amd64)",
-          "path": "/iso-cd/debian-13.5.0-amd64-netinst.iso"
+          "label": "13.7.0 (Trixie) Netinst (amd64)",
+          "path": "/iso-cd/debian-13.7.0-amd64-netinst.iso"
         }
       ]
     },
@@ -546,20 +546,24 @@
           "path": "/alpine-standard-3.23.4-x86_64.iso"
         },
         {
-          "label": "3.20 Extended (x86_64)",
-          "path": "/alpine-extended-3.20.3-x86_64.iso"
-        },
-        {
-          "label": "3.20 Virtual (x86_64)",
-          "path": "/alpine-virt-3.20.3-x86_64.iso"
-        },
-        {
           "label": "3.23.4 Extended (x86_64)",
           "path": "/alpine-extended-3.23.4-x86_64.iso"
         },
         {
           "label": "3.23.4 Virt (x86_64)",
           "path": "/alpine-virt-3.23.4-x86_64.iso"
+        },
+        {
+          "label": "3.24.2 Standard (x86_64)",
+          "path": "/alpine-standard-3.24.2-x86_64.iso"
+        },
+        {
+          "label": "3.24.2 Extended (x86_64)",
+          "path": "/alpine-extended-3.24.2-x86_64.iso"
+        },
+        {
+          "label": "3.24.2 Virt (x86_64)",
+          "path": "/alpine-virt-3.24.2-x86_64.iso"
         }
       ]
     },
